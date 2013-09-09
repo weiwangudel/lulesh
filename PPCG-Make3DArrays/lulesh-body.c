@@ -333,7 +333,9 @@ void CalcElemFBHourglassForce(Real_t *xd, Real_t *yd, Real_t *zd,  Real_t *hourg
 
 void CalcFBHourglassForceForElems(Real_t *determ,
             Real_t *x8n,      Real_t *y8n,      Real_t *z8n,
-            Real_t *dvdx,     Real_t *dvdy,     Real_t *dvdz,
+            Real_t dvdx[edgeElems][edgeElems][edgeElems][8],
+            Real_t dvdy[edgeElems][edgeElems][edgeElems][8],
+            Real_t dvdz[edgeElems][edgeElems][edgeElems][8],
             Real_t hourg)
 {
    /*************************************************
@@ -388,9 +390,11 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 /*    compute the hourglass modes */
 
 
-   Index_t i2;
+   Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numElem, hourg) 
-   for(i2=0; i2<numElem; ++i2){
+   for (i=0; i<edgeElems; ++i)                  //i.e. plane
+      for (j=0; j<edgeElems; ++j)               //i.e. row
+        for (k=0; k<edgeElems; ++k)   {           //i.e. col
       Real_t *fx_local, *fy_local, *fz_local ;
       Real_t hgfx[8], hgfy[8], hgfz[8] ;
 
@@ -400,9 +404,9 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       Real_t hourgam4[4], hourgam5[4], hourgam6[4], hourgam7[4];
       Real_t xd1[8], yd1[8], zd1[8] ;
 
-      const Index_t *elemToNode = nodelist(i2);
-      Index_t i3=8*i2;
-      Real_t volinv=(1.0)/determ[i2];
+      const Index_t *elemToNode = nodelist((i*edgeElems*edgeElems+j*edgeElems+k));
+      Index_t i3=8*(i*edgeElems*edgeElems+j*edgeElems+k);
+      Real_t volinv=(1.0)/determ[(i*edgeElems*edgeElems+j*edgeElems+k)];
       Real_t ss1, mass1, volume13 ;
       for(Index_t i1=0;i1<4;++i1){
 
@@ -424,46 +428,46 @@ void CalcFBHourglassForceForElems(Real_t *determ,
             z8n[i3+4] * gamma[i1][4] + z8n[i3+5] * gamma[i1][5] +
             z8n[i3+6] * gamma[i1][6] + z8n[i3+7] * gamma[i1][7];
 
-         hourgam0[i1] = gamma[i1][0] -  volinv*(dvdx[i3  ] * hourmodx +
-                                                  dvdy[i3  ] * hourmody +
-                                                  dvdz[i3  ] * hourmodz );
+         hourgam0[i1] = gamma[i1][0] -  volinv*(dvdx[i][j][k][0] * hourmodx +
+                                                  dvdy[i][j][k][0] * hourmody +
+                                                  dvdz[i][j][k][0] * hourmodz );
 
-         hourgam1[i1] = gamma[i1][1] -  volinv*(dvdx[i3+1] * hourmodx +
-                                                  dvdy[i3+1] * hourmody +
-                                                  dvdz[i3+1] * hourmodz );
+         hourgam1[i1] = gamma[i1][1] -  volinv*(dvdx[i][j][k][1] * hourmodx +
+                                                  dvdy[i][j][k][1] * hourmody +
+                                                  dvdz[i][j][k][1] * hourmodz );
 
-         hourgam2[i1] = gamma[i1][2] -  volinv*(dvdx[i3+2] * hourmodx +
-                                                  dvdy[i3+2] * hourmody +
-                                                  dvdz[i3+2] * hourmodz );
+         hourgam2[i1] = gamma[i1][2] -  volinv*(dvdx[i][j][k][2] * hourmodx +
+                                                  dvdy[i][j][k][2] * hourmody +
+                                                  dvdz[i][j][k][2] * hourmodz );
 
-         hourgam3[i1] = gamma[i1][3] -  volinv*(dvdx[i3+3] * hourmodx +
-                                                  dvdy[i3+3] * hourmody +
-                                                  dvdz[i3+3] * hourmodz );
+         hourgam3[i1] = gamma[i1][3] -  volinv*(dvdx[i][j][k][3] * hourmodx +
+                                                  dvdy[i][j][k][3] * hourmody +
+                                                  dvdz[i][j][k][3] * hourmodz );
 
-         hourgam4[i1] = gamma[i1][4] -  volinv*(dvdx[i3+4] * hourmodx +
-                                                  dvdy[i3+4] * hourmody +
-                                                  dvdz[i3+4] * hourmodz );
+         hourgam4[i1] = gamma[i1][4] -  volinv*(dvdx[i][j][k][4] * hourmodx +
+                                                  dvdy[i][j][k][4] * hourmody +
+                                                  dvdz[i][j][k][4] * hourmodz );
 
-         hourgam5[i1] = gamma[i1][5] -  volinv*(dvdx[i3+5] * hourmodx +
-                                                  dvdy[i3+5] * hourmody +
-                                                  dvdz[i3+5] * hourmodz );
+         hourgam5[i1] = gamma[i1][5] -  volinv*(dvdx[i][j][k][5] * hourmodx +
+                                                  dvdy[i][j][k][5] * hourmody +
+                                                  dvdz[i][j][k][5] * hourmodz );
 
-         hourgam6[i1] = gamma[i1][6] -  volinv*(dvdx[i3+6] * hourmodx +
-                                                  dvdy[i3+6] * hourmody +
-                                                  dvdz[i3+6] * hourmodz );
+         hourgam6[i1] = gamma[i1][6] -  volinv*(dvdx[i][j][k][6] * hourmodx +
+                                                  dvdy[i][j][k][6] * hourmody +
+                                                  dvdz[i][j][k][6] * hourmodz );
 
-         hourgam7[i1] = gamma[i1][7] -  volinv*(dvdx[i3+7] * hourmodx +
-                                                  dvdy[i3+7] * hourmody +
-                                                  dvdz[i3+7] * hourmodz );
+         hourgam7[i1] = gamma[i1][7] -  volinv*(dvdx[i][j][k][7] * hourmodx +
+                                                  dvdy[i][j][k][7] * hourmody +
+                                                  dvdz[i][j][k][7] * hourmodz );
 
       }
 
       /* compute forces */
       /* store forces into h arrays (force arrays) */
 
-      ss1=ss(i2);
-      mass1=elemMass(i2);
-      volume13=CBRT(determ[i2]);
+      ss1=ss((i*edgeElems*edgeElems+j*edgeElems+k));
+      mass1=elemMass((i*edgeElems*edgeElems+j*edgeElems+k));
+      volume13=CBRT(determ[(i*edgeElems*edgeElems+j*edgeElems+k)]);
 
       Index_t n0si2 = elemToNode[0];
       Index_t n1si2 = elemToNode[1];
@@ -600,33 +604,6 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edg
         for (k=0; k<edgeElems; ++k)  {           //i.e. col
 
       {
-        //x1[0] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k)                                      );
-        //x1[1] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k) +1                                   );
-        //x1[2] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes + 1                      );
-        //x1[3] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes                          );
-        //x1[4] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes                );
-        //x1[5] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes             + 1 );
-        //x1[6] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes + edgeNodes + 1 );
-        //x1[7] = x((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes + edgeNodes    );
-
-        //y1[0] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k)                                      );
-        //y1[1] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k) +1                                   );
-        //y1[2] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes + 1                      );
-        //y1[3] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes                          );
-        //y1[4] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes                );
-        //y1[5] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes             + 1 );
-        //y1[6] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes + edgeNodes + 1 );
-        //y1[7] = y((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes + edgeNodes    );
-
-        //z1[0] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k)                                      );
-        //z1[1] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k) +1                                   );
-        //z1[2] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes + 1                      );
-        //z1[3] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes                          );
-        //z1[4] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes                );
-        //z1[5] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes             + 1 );
-        //z1[6] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes + edgeNodes + 1 );
-        //z1[7] = z((i*edgeNodes*edgeNodes+j*edgeNodes+k) + edgeNodes*edgeNodes + edgeNodes    );
-
         x1[0] = m_x[i][j][k];
         x1[1] = m_x[i][j][k+1];
         x1[2] = m_x[i][j+1][k+1];
@@ -765,11 +742,6 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edg
       (y1[4] + y1[0]) * (x1[3] + x1[0]) - (y1[3] + y1[0]) * (x1[4] + x1[0]) );
 
       }
-
-      /* load into temporary storage for FB Hour Glass control */
-//      for(ii=0;ii<8;++ii){
-//         Index_t jj=8*i+ii;
-//         jj=8*(i*edgeElems*edgeElems+j*edgeElems+k)+ii;
 
          dvdx[i][j][k][0] = pfx[0];
          dvdy[i][j][k][0] = pfy[0];
