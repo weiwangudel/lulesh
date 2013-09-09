@@ -812,9 +812,6 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edg
    Release(&z8n) ;
    Release(&y8n) ;
    Release(&x8n) ;
-   Release(&dvdz) ;
-   Release(&dvdy) ;
-   Release(&dvdx) ;
 
    return ;
 }
