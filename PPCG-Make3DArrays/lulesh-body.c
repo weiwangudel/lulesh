@@ -471,41 +471,32 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       mass1=elemMass((i*edgeElems*edgeElems+j*edgeElems+k));
       volume13=CBRT(determ[(i*edgeElems*edgeElems+j*edgeElems+k)]);
 
-      Index_t n0si2 = elemToNode[0];
-      Index_t n1si2 = elemToNode[1];
-      Index_t n2si2 = elemToNode[2];
-      Index_t n3si2 = elemToNode[3];
-      Index_t n4si2 = elemToNode[4];
-      Index_t n5si2 = elemToNode[5];
-      Index_t n6si2 = elemToNode[6];
-      Index_t n7si2 = elemToNode[7];
+      xd1[0] = xd(elemToNode[0]);
+      xd1[1] = xd(elemToNode[1]);
+      xd1[2] = xd(elemToNode[2]);
+      xd1[3] = xd(elemToNode[3]);
+      xd1[4] = xd(elemToNode[4]);
+      xd1[5] = xd(elemToNode[5]);
+      xd1[6] = xd(elemToNode[6]);
+      xd1[7] = xd(elemToNode[7]);
 
-      xd1[0] = xd(n0si2);
-      xd1[1] = xd(n1si2);
-      xd1[2] = xd(n2si2);
-      xd1[3] = xd(n3si2);
-      xd1[4] = xd(n4si2);
-      xd1[5] = xd(n5si2);
-      xd1[6] = xd(n6si2);
-      xd1[7] = xd(n7si2);
+      yd1[0] = yd(elemToNode[0]);
+      yd1[1] = yd(elemToNode[1]);
+      yd1[2] = yd(elemToNode[2]);
+      yd1[3] = yd(elemToNode[3]);
+      yd1[4] = yd(elemToNode[4]);
+      yd1[5] = yd(elemToNode[5]);
+      yd1[6] = yd(elemToNode[6]);
+      yd1[7] = yd(elemToNode[7]);
 
-      yd1[0] = yd(n0si2);
-      yd1[1] = yd(n1si2);
-      yd1[2] = yd(n2si2);
-      yd1[3] = yd(n3si2);
-      yd1[4] = yd(n4si2);
-      yd1[5] = yd(n5si2);
-      yd1[6] = yd(n6si2);
-      yd1[7] = yd(n7si2);
-
-      zd1[0] = zd(n0si2);
-      zd1[1] = zd(n1si2);
-      zd1[2] = zd(n2si2);
-      zd1[3] = zd(n3si2);
-      zd1[4] = zd(n4si2);
-      zd1[5] = zd(n5si2);
-      zd1[6] = zd(n6si2);
-      zd1[7] = zd(n7si2);
+      zd1[0] = zd(elemToNode[0]);
+      zd1[1] = zd(elemToNode[1]);
+      zd1[2] = zd(elemToNode[2]);
+      zd1[3] = zd(elemToNode[3]);
+      zd1[4] = zd(elemToNode[4]);
+      zd1[5] = zd(elemToNode[5]);
+      zd1[6] = zd(elemToNode[6]);
+      zd1[7] = zd(elemToNode[7]);
 
       coefficient = - hourg * (0.01) * ss1 * mass1 / volume13;
 
@@ -806,13 +797,8 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edg
  #pragma endscop
 
    if ( hgcoef > 0.0 ) {
-      printf("hello\n");
       CalcFBHourglassForceForElems(determ,x8n,y8n,z8n,dvdx,dvdy,dvdz,hgcoef) ;
    }
-
-   Release(&z8n) ;
-   Release(&y8n) ;
-   Release(&x8n) ;
 
    return ;
 }
