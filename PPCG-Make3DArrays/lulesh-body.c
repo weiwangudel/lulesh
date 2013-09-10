@@ -332,7 +332,9 @@ void CalcElemFBHourglassForce(Real_t *xd, Real_t *yd, Real_t *zd,  Real_t *hourg
 
 
 void CalcFBHourglassForceForElems(Real_t *determ,
-            Real_t *x8n,      Real_t *y8n,      Real_t *z8n,
+            Real_t x8n[edgeElems][edgeElems][edgeElems][8],
+            Real_t y8n[edgeElems][edgeElems][edgeElems][8],
+            Real_t z8n[edgeElems][edgeElems][edgeElems][8],
             Real_t dvdx[edgeElems][edgeElems][edgeElems][8],
             Real_t dvdy[edgeElems][edgeElems][edgeElems][8],
             Real_t dvdz[edgeElems][edgeElems][edgeElems][8],
@@ -411,22 +413,22 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       for(Index_t i1=0;i1<4;++i1){
 
          Real_t hourmodx =
-            x8n[i3] * gamma[i1][0] + x8n[i3+1] * gamma[i1][1] +
-            x8n[i3+2] * gamma[i1][2] + x8n[i3+3] * gamma[i1][3] +
-            x8n[i3+4] * gamma[i1][4] + x8n[i3+5] * gamma[i1][5] +
-            x8n[i3+6] * gamma[i1][6] + x8n[i3+7] * gamma[i1][7];
+            x8n[i][j][k][0] * gamma[i1][0] + x8n[i][j][k][1] * gamma[i1][1] +
+            x8n[i][j][k][2] * gamma[i1][2] + x8n[i][j][k][3] * gamma[i1][3] +
+            x8n[i][j][k][4] * gamma[i1][4] + x8n[i][j][k][5] * gamma[i1][5] +
+            x8n[i][j][k][6] * gamma[i1][6] + x8n[i][j][k][7] * gamma[i1][7];
 
          Real_t hourmody =
-            y8n[i3] * gamma[i1][0] + y8n[i3+1] * gamma[i1][1] +
-            y8n[i3+2] * gamma[i1][2] + y8n[i3+3] * gamma[i1][3] +
-            y8n[i3+4] * gamma[i1][4] + y8n[i3+5] * gamma[i1][5] +
-            y8n[i3+6] * gamma[i1][6] + y8n[i3+7] * gamma[i1][7];
+            y8n[i][j][k][0] * gamma[i1][0] + y8n[i][j][k][1] * gamma[i1][1] +
+            y8n[i][j][k][2] * gamma[i1][2] + y8n[i][j][k][3] * gamma[i1][3] +
+            y8n[i][j][k][4] * gamma[i1][4] + y8n[i][j][k][5] * gamma[i1][5] +
+            y8n[i][j][k][6] * gamma[i1][6] + y8n[i][j][k][7] * gamma[i1][7];
 
          Real_t hourmodz =
-            z8n[i3] * gamma[i1][0] + z8n[i3+1] * gamma[i1][1] +
-            z8n[i3+2] * gamma[i1][2] + z8n[i3+3] * gamma[i1][3] +
-            z8n[i3+4] * gamma[i1][4] + z8n[i3+5] * gamma[i1][5] +
-            z8n[i3+6] * gamma[i1][6] + z8n[i3+7] * gamma[i1][7];
+            z8n[i][j][k][0] * gamma[i1][0] + z8n[i][j][k][1] * gamma[i1][1] +
+            z8n[i][j][k][2] * gamma[i1][2] + z8n[i][j][k][3] * gamma[i1][3] +
+            z8n[i][j][k][4] * gamma[i1][4] + z8n[i][j][k][5] * gamma[i1][5] +
+            z8n[i][j][k][6] * gamma[i1][6] + z8n[i][j][k][7] * gamma[i1][7];
 
          hourgam0[i1] = gamma[i1][0] -  volinv*(dvdx[i][j][k][0] * hourmodx +
                                                   dvdy[i][j][k][0] * hourmody +
@@ -578,23 +580,22 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edg
 {
    Index_t numElem = numElem() ;
    Index_t numElem8 = numElem * 8 ;
-   //Real_t *dvdx = Allocate(numElem8) ;
-   //Real_t *dvdy = Allocate(numElem8) ;
-   //Real_t *dvdz = Allocate(numElem8) ;
-
-    Real_t dvdx[edgeElems][edgeElems][edgeElems][8];
-    Real_t dvdy[edgeElems][edgeElems][edgeElems][8];
-    Real_t dvdz[edgeElems][edgeElems][edgeElems][8];
-   Real_t *x8n  = Allocate(numElem8) ;
-   Real_t *y8n  = Allocate(numElem8) ;
-   Real_t *z8n  = Allocate(numElem8) ;
+   
+   Real_t dvdx[edgeElems][edgeElems][edgeElems][8];
+   Real_t dvdy[edgeElems][edgeElems][edgeElems][8];
+   Real_t dvdz[edgeElems][edgeElems][edgeElems][8];
+   
+   //Real_t *x8n  = Allocate(numElem8) ;
+   //Real_t *y8n  = Allocate(numElem8) ;
+   //Real_t *z8n  = Allocate(numElem8) ;
+   Real_t x8n[edgeElems][edgeElems][edgeElems][8];
+   Real_t y8n[edgeElems][edgeElems][edgeElems][8];
+   Real_t z8n[edgeElems][edgeElems][edgeElems][8];
 
    /* start loop over elements */
    Index_t i;
    Index_t j;
    Index_t k;
-// #pragma omp parallel for firstprivate(numElem)
-   //for (i=0 ; i<numElem ; ++i){
    Real_t  x1[8],  y1[8],  z1[8] ;
    Real_t pfx[8], pfy[8], pfz[8] ;
    Index_t ii,jj;
@@ -768,31 +769,30 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edg
          dvdy[i][j][k][7] = pfy[7];
          dvdz[i][j][k][7] = pfz[7];
 
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+0]  = x1[0];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+0]  = y1[0];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+0]  = z1[0];
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+1]  = x1[1];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+1]  = y1[1];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+1]  = z1[1];
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+2]  = x1[2];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+2]  = y1[2];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+2]  = z1[2];
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+3]  = x1[3];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+3]  = y1[3];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+3]  = z1[3];
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+4]  = x1[4];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+4]  = y1[4];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+4]  = z1[4];
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+5]  = x1[5];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+5]  = y1[5];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+5]  = z1[5];
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+6]  = x1[6];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+6]  = y1[6];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+6]  = z1[6];
-         x8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+7]  = x1[7];
-         y8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+7]  = y1[7];
-         z8n[8*(i*edgeElems*edgeElems+j*edgeElems+k)+7]  = z1[7];
- //     }
+         x8n[i][j][k][0]  = x1[0];
+         y8n[i][j][k][0]  = y1[0];
+         z8n[i][j][k][0]  = z1[0];
+         x8n[i][j][k][1]  = x1[1];
+         y8n[i][j][k][1]  = y1[1];
+         z8n[i][j][k][1]  = z1[1];
+         x8n[i][j][k][2]  = x1[2];
+         y8n[i][j][k][2]  = y1[2];
+         z8n[i][j][k][2]  = z1[2];
+         x8n[i][j][k][3]  = x1[3];
+         y8n[i][j][k][3]  = y1[3];
+         z8n[i][j][k][3]  = z1[3];
+         x8n[i][j][k][4]  = x1[4];
+         y8n[i][j][k][4]  = y1[4];
+         z8n[i][j][k][4]  = z1[4];
+         x8n[i][j][k][5]  = x1[5];
+         y8n[i][j][k][5]  = y1[5];
+         z8n[i][j][k][5]  = z1[5];
+         x8n[i][j][k][6]  = x1[6];
+         y8n[i][j][k][6]  = y1[6];
+         z8n[i][j][k][6]  = z1[6];
+         x8n[i][j][k][7]  = x1[7];
+         y8n[i][j][k][7]  = y1[7];
+         z8n[i][j][k][7]  = z1[7];
 
       determ[i*edgeElems*edgeElems+j*edgeElems+k] = volo(i*edgeElems*edgeElems+j*edgeElems+k) * v(i*edgeElems*edgeElems+j*edgeElems+k);
 
@@ -806,6 +806,7 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edg
  #pragma endscop
 
    if ( hgcoef > 0.0 ) {
+      printf("hello\n");
       CalcFBHourglassForceForElems(determ,x8n,y8n,z8n,dvdx,dvdy,dvdz,hgcoef) ;
    }
 
