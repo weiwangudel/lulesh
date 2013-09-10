@@ -17,18 +17,22 @@ Index_t * Allocate_Index(size_t size)
 
    void AllocateNodalPersistent(size_t size)
    {
-      int i;
+      int i,j,k;
 
-      m_xd=Allocate(size) ;
-      for (i=0; i<size; i++)
-        xd(i) = 0.0;
+      for (i=0; i<edgeNodes; i++)
+        for (j=0; j<edgeNodes; j++)
+          for (k=0; k<edgeNodes; k++)
+            xd(i,j,k) = 0.0;
 
-      m_yd=Allocate(size) ;
-      for (i=0; i<size; i++)
-        yd(i) = 0.0;
-      m_zd=Allocate(size) ;
-      for (i=0; i<size; i++)
-        zd(i) = 0.0;
+      for (i=0; i<edgeNodes; i++)
+        for (j=0; j<edgeNodes; j++)
+          for (k=0; k<edgeNodes; k++)
+            yd(i,j,k) = 0.0;
+
+      for (i=0; i<edgeNodes; i++)
+        for (j=0; j<edgeNodes; j++)
+          for (k=0; k<edgeNodes; k++)
+            zd(i,j,k) = 0.0;
 
       m_xdd=Allocate(size) ;
       for (i=0; i<size; i++)
@@ -673,17 +677,17 @@ void CalcVelocityForNodes(const Real_t dt, const Real_t u_cut)
    {
      Real_t xdtmp, ydtmp, zdtmp ;
 
-     xdtmp = xd(i) + xdd(i) * dt ;
+     xdtmp = xd(i/(edgeNodes*edgeNodes), (i/edgeNodes)%edgeNodes, i%edgeNodes) + xdd(i) * dt ;
      if( FABS(xdtmp) < u_cut ) xdtmp = (0.0);
-     xd(i) = xdtmp ;
+     xd(i/(edgeNodes*edgeNodes), (i/edgeNodes)%edgeNodes, i%edgeNodes) = xdtmp ;
 
-     ydtmp = yd(i) + ydd(i) * dt ;
+     ydtmp = yd(i/(edgeNodes*edgeNodes), (i/edgeNodes)%edgeNodes, i%edgeNodes) + ydd(i) * dt ;
      if( FABS(ydtmp) < u_cut ) ydtmp = (0.0);
-     yd(i) = ydtmp ;
+     yd(i/(edgeNodes*edgeNodes), (i/edgeNodes)%edgeNodes, i%edgeNodes) = ydtmp ;
 
-     zdtmp = zd(i) + zdd(i) * dt ;
+     zdtmp = zd(i/(edgeNodes*edgeNodes), (i/edgeNodes)%edgeNodes, i%edgeNodes) + zdd(i) * dt ;
      if( FABS(zdtmp) < u_cut ) zdtmp = (0.0);
-     zd(i) = zdtmp ;
+     zd(i/(edgeNodes*edgeNodes), (i/edgeNodes)%edgeNodes, i%edgeNodes) = zdtmp ;
    }
 }
 
@@ -701,9 +705,9 @@ void CalcPositionForNodes(const Real_t dt)
      for ( j = 0 ; j < edgeNodes ; ++j )
       for ( k = 0 ; k < edgeNodes ; ++k )
       {
-        x(i,j,k) += xd(i*edgeNodes*edgeNodes+j*edgeNodes+k) * dt ;
-        y(i,j,k) += yd(i*edgeNodes*edgeNodes+j*edgeNodes+k) * dt ;
-        z(i,j,k) += zd(i*edgeNodes*edgeNodes+j*edgeNodes+k) * dt ;
+        x(i,j,k) += xd(i,j,k) * dt ;
+        y(i,j,k) += yd(i,j,k) * dt ;
+        z(i,j,k) += zd(i,j,k) * dt ;
       }
 }
 
@@ -1010,15 +1014,41 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
                                                   z_local,
                                                   volume);
     
-    const Index_t *elemToNode = nodelist(i*edgeElems*edgeElems+j*edgeElems+k);
-    // get nodal velocities from global array and copy into local arrays.
-    for( Index_t lnode=0 ; lnode<8 ; ++lnode )
-    {
-      Index_t gnode = elemToNode[lnode];
-      xd_local[lnode] = xd(gnode);
-      yd_local[lnode] = yd(gnode);
-      zd_local[lnode] = zd(gnode);
-    }
+    //const Index_t *elemToNode = nodelist(i*edgeElems*edgeElems+j*edgeElems+k);
+    //for( Index_t lnode=0 ; lnode<8 ; ++lnode )
+    //{
+    //  Index_t gnode = elemToNode[lnode];
+    //  xd_local[lnode] = xd(gnode);
+    //  yd_local[lnode] = yd(gnode);
+    //  zd_local[lnode] = zd(gnode);
+    //}
+    xd_local[0] = m_xd[i][j][k];                                                    
+    xd_local[1] = m_xd[i][j][k+1];                                                  
+    xd_local[2] = m_xd[i][j+1][k+1];                                                
+    xd_local[3] = m_xd[i][j+1][k];                                                  
+    xd_local[4] = m_xd[i+1][j][k];                                                  
+    xd_local[5] = m_xd[i+1][j][k+1];                                                
+    xd_local[6] = m_xd[i+1][j+1][k+1];                                              
+    xd_local[7] = m_xd[i+1][j+1][k];                                                
+
+    yd_local[0] = m_yd[i][j][k];                                                    
+    yd_local[1] = m_yd[i][j][k+1];                                                  
+    yd_local[2] = m_yd[i][j+1][k+1];                                                
+    yd_local[3] = m_yd[i][j+1][k];                                                  
+    yd_local[4] = m_yd[i+1][j][k];                                                  
+    yd_local[5] = m_yd[i+1][j][k+1];                                                
+    yd_local[6] = m_yd[i+1][j+1][k+1];                                              
+    yd_local[7] = m_yd[i+1][j+1][k];                                                
+
+    zd_local[0] = m_zd[i][j][k];                                                    
+    zd_local[1] = m_zd[i][j][k+1];                                                  
+    zd_local[2] = m_zd[i][j+1][k+1];                                                
+    zd_local[3] = m_zd[i][j+1][k];                                                  
+    zd_local[4] = m_zd[i+1][j][k];                                                  
+    zd_local[5] = m_zd[i+1][j][k+1];                                                
+    zd_local[6] = m_zd[i+1][j+1][k+1];                                              
+    zd_local[7] = m_zd[i+1][j+1][k];             
+
 
     Real_t dt2 = (0.5) * dt;
     for ( Index_t j=0 ; j<8 ; ++j )
@@ -1092,15 +1122,6 @@ void CalcMonotonicQGradientsForElems()
       Real_t ax,ay,az ;
       Real_t dxv,dyv,dzv ;
 
-      const Index_t *elemToNode = nodelist(i*edgeElems*edgeElems+j*edgeElems+k);
-      Index_t n0 = elemToNode[0] ;
-      Index_t n1 = elemToNode[1] ;
-      Index_t n2 = elemToNode[2] ;
-      Index_t n3 = elemToNode[3] ;
-      Index_t n4 = elemToNode[4] ;
-      Index_t n5 = elemToNode[5] ;
-      Index_t n6 = elemToNode[6] ;
-      Index_t n7 = elemToNode[7] ;
 
       /* x,y,z */
       Real_t x0 = m_x[i][j][k];                                                    
@@ -1131,32 +1152,32 @@ void CalcMonotonicQGradientsForElems()
       Real_t z7 = m_z[i+1][j+1][k];             
 
 
-      Real_t xv0 = xd(n0) ;
-      Real_t xv1 = xd(n1) ;
-      Real_t xv2 = xd(n2) ;
-      Real_t xv3 = xd(n3) ;
-      Real_t xv4 = xd(n4) ;
-      Real_t xv5 = xd(n5) ;
-      Real_t xv6 = xd(n6) ;
-      Real_t xv7 = xd(n7) ;
-
-      Real_t yv0 = yd(n0) ;
-      Real_t yv1 = yd(n1) ;
-      Real_t yv2 = yd(n2) ;
-      Real_t yv3 = yd(n3) ;
-      Real_t yv4 = yd(n4) ;
-      Real_t yv5 = yd(n5) ;
-      Real_t yv6 = yd(n6) ;
-      Real_t yv7 = yd(n7) ;
-
-      Real_t zv0 = zd(n0) ;
-      Real_t zv1 = zd(n1) ;
-      Real_t zv2 = zd(n2) ;
-      Real_t zv3 = zd(n3) ;
-      Real_t zv4 = zd(n4) ;
-      Real_t zv5 = zd(n5) ;
-      Real_t zv6 = zd(n6) ;
-      Real_t zv7 = zd(n7) ;
+      Real_t xv0 = m_xd[i][j][k];         
+      Real_t xv1 = m_xd[i][j][k+1];       
+      Real_t xv2 = m_xd[i][j+1][k+1];     
+      Real_t xv3 = m_xd[i][j+1][k];       
+      Real_t xv4 = m_xd[i+1][j][k];       
+      Real_t xv5 = m_xd[i+1][j][k+1];     
+      Real_t xv6 = m_xd[i+1][j+1][k+1];   
+      Real_t xv7 = m_xd[i+1][j+1][k];     
+                                        
+      Real_t yv0 = m_yd[i][j][k];         
+      Real_t yv1 = m_yd[i][j][k+1];       
+      Real_t yv2 = m_yd[i][j+1][k+1];     
+      Real_t yv3 = m_yd[i][j+1][k];       
+      Real_t yv4 = m_yd[i+1][j][k];       
+      Real_t yv5 = m_yd[i+1][j][k+1];     
+      Real_t yv6 = m_yd[i+1][j+1][k+1];   
+      Real_t yv7 = m_yd[i+1][j+1][k];     
+                                        
+      Real_t zv0 = m_zd[i][j][k];         
+      Real_t zv1 = m_zd[i][j][k+1];       
+      Real_t zv2 = m_zd[i][j+1][k+1];     
+      Real_t zv3 = m_zd[i][j+1][k];       
+      Real_t zv4 = m_zd[i+1][j][k];       
+      Real_t zv5 = m_zd[i+1][j][k+1];     
+      Real_t zv6 = m_zd[i+1][j+1][k+1];   
+      Real_t zv7 = m_zd[i+1][j+1][k];     
 
       Real_t vol = volo(i*edgeElems*edgeElems+j*edgeElems+k)*vnew(i*edgeElems*edgeElems+j*edgeElems+k) ;
       Real_t norm = (1.0) / ( vol + ptiny ) ;
