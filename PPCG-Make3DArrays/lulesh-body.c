@@ -146,7 +146,6 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       Real_t hourgam4[4], hourgam5[4], hourgam6[4], hourgam7[4];
       Real_t xd1[8], yd1[8], zd1[8] ;
 
-      const Index_t *elemToNode = nodelist((i*edgeElems*edgeElems+j*edgeElems+k));
       Index_t i3=8*(i*edgeElems*edgeElems+j*edgeElems+k);
       Real_t volinv=(1.0)/determ[(i*edgeElems*edgeElems+j*edgeElems+k)];
       Real_t ss1, mass1, volume13 ;
@@ -211,32 +210,33 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       mass1=elemMass((i*edgeElems*edgeElems+j*edgeElems+k));
       volume13=CBRT(determ[(i*edgeElems*edgeElems+j*edgeElems+k)]);
 
-      xd1[0] = xd(elemToNode[0]);
-      xd1[1] = xd(elemToNode[1]);
-      xd1[2] = xd(elemToNode[2]);
-      xd1[3] = xd(elemToNode[3]);
-      xd1[4] = xd(elemToNode[4]);
-      xd1[5] = xd(elemToNode[5]);
-      xd1[6] = xd(elemToNode[6]);
-      xd1[7] = xd(elemToNode[7]);
-
-      yd1[0] = yd(elemToNode[0]);
-      yd1[1] = yd(elemToNode[1]);
-      yd1[2] = yd(elemToNode[2]);
-      yd1[3] = yd(elemToNode[3]);
-      yd1[4] = yd(elemToNode[4]);
-      yd1[5] = yd(elemToNode[5]);
-      yd1[6] = yd(elemToNode[6]);
-      yd1[7] = yd(elemToNode[7]);
-
-      zd1[0] = zd(elemToNode[0]);
-      zd1[1] = zd(elemToNode[1]);
-      zd1[2] = zd(elemToNode[2]);
-      zd1[3] = zd(elemToNode[3]);
-      zd1[4] = zd(elemToNode[4]);
-      zd1[5] = zd(elemToNode[5]);
-      zd1[6] = zd(elemToNode[6]);
-      zd1[7] = zd(elemToNode[7]);
+      const Index_t *elemToNode = nodelist((i*edgeElems*edgeElems+j*edgeElems+k));
+      xd1[0] = m_xd[i][j][k];
+      xd1[1] = m_xd[i][j][k+1];
+      xd1[2] = m_xd[i][j+1][k+1];
+      xd1[3] = m_xd[i][j+1][k];
+      xd1[4] = m_xd[i+1][j][k];
+      xd1[5] = m_xd[i+1][j][k+1];
+      xd1[6] = m_xd[i+1][j+1][k+1];
+      xd1[7] = m_xd[i+1][j+1][k];
+                                
+      yd1[0] = m_yd[i][j][k];     
+      yd1[1] = m_yd[i][j][k+1];  
+      yd1[2] = m_yd[i][j+1][k+1];
+      yd1[3] = m_yd[i][j+1][k]; 
+      yd1[4] = m_yd[i+1][j][k];
+      yd1[5] = m_yd[i+1][j][k+1];
+      yd1[6] = m_yd[i+1][j+1][k+1];
+      yd1[7] = m_yd[i+1][j+1][k];
+                                
+      zd1[0] = m_zd[i][j][k];     
+      zd1[1] = m_zd[i][j][k+1];  
+      zd1[2] = m_zd[i][j+1][k+1];
+      zd1[3] = m_zd[i][j+1][k]; 
+      zd1[4] = m_zd[i+1][j][k];
+      zd1[5] = m_zd[i+1][j][k+1];
+      zd1[6] = m_zd[i+1][j+1][k+1];
+      zd1[7] = m_zd[i+1][j+1][k];
 
       coefficient = - hourg * (0.01) * ss1 * mass1 / volume13;
 

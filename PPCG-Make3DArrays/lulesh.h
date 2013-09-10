@@ -6,9 +6,9 @@
 #define   y(i,j,k)    m_y[i][j][k]
 #define   z(i,j,k)    m_z[i][j][k]
 
-#define xd(i) m_xd[i]
-#define yd(i) m_yd[i]
-#define zd(i) m_zd[i]
+#define xd(i,j,k) m_xd[i][j][k]
+#define yd(i,j,k) m_yd[i][j][k]
+#define zd(i,j,k) m_zd[i][j][k]
 
 #define   xdd(idx)   m_xdd[idx]
 #define   ydd(idx)   m_ydd[idx]
@@ -121,9 +121,10 @@ Real_t m_x[edgeNodes][edgeNodes][edgeNodes];
 Real_t m_y[edgeNodes][edgeNodes][edgeNodes];
 Real_t m_z[edgeNodes][edgeNodes][edgeNodes];
 
-   Real_t * m_xd ; /* velocities */
-   Real_t * m_yd ;
-   Real_t * m_zd ;
+/* velocities */
+Real_t m_xd[edgeNodes][edgeNodes][edgeNodes];
+Real_t m_yd[edgeNodes][edgeNodes][edgeNodes];
+Real_t m_zd[edgeNodes][edgeNodes][edgeNodes];
 
    Real_t * m_xdd ; /* accelerations */
    Real_t * m_ydd ;
