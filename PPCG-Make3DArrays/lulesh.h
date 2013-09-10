@@ -1,5 +1,5 @@
-#define edgeElems  10 
-#define edgeNodes  11 
+#define edgeElems  45 
+#define edgeNodes  46 
 
 
 #define   x(i,j,k)    m_x[i][j][k] 
@@ -125,6 +125,15 @@ Real_t m_z[edgeNodes][edgeNodes][edgeNodes];
 Real_t m_xd[edgeNodes][edgeNodes][edgeNodes];
 Real_t m_yd[edgeNodes][edgeNodes][edgeNodes];
 Real_t m_zd[edgeNodes][edgeNodes][edgeNodes];
+
+
+Real_t dvdx[edgeElems][edgeElems][edgeElems][8];
+Real_t dvdy[edgeElems][edgeElems][edgeElems][8];
+Real_t dvdz[edgeElems][edgeElems][edgeElems][8];
+   
+Real_t x8n[edgeElems][edgeElems][edgeElems][8];
+Real_t y8n[edgeElems][edgeElems][edgeElems][8];
+Real_t z8n[edgeElems][edgeElems][edgeElems][8];
 
    Real_t * m_xdd ; /* accelerations */
    Real_t * m_ydd ;
@@ -255,4 +264,4 @@ Real_t m_zd[edgeNodes][edgeNodes][edgeNodes];
 #define ZETA_P_SYMM 0x400
 #define ZETA_P_FREE 0x800
 
-void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edgeNodes][edgeNodes][edgeNodes]);
+void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef);

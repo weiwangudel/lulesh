@@ -483,21 +483,12 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 }
 
 
-void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edgeNodes][edgeNodes][edgeNodes])
+void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
 {
    Index_t numElem = numElem() ;
    Index_t numElem8 = numElem * 8 ;
    
-   Real_t dvdx[edgeElems][edgeElems][edgeElems][8];
-   Real_t dvdy[edgeElems][edgeElems][edgeElems][8];
-   Real_t dvdz[edgeElems][edgeElems][edgeElems][8];
-   
-   //Real_t *x8n  = Allocate(numElem8) ;
-   //Real_t *y8n  = Allocate(numElem8) ;
-   //Real_t *z8n  = Allocate(numElem8) ;
-   Real_t x8n[edgeElems][edgeElems][edgeElems][8];
-   Real_t y8n[edgeElems][edgeElems][edgeElems][8];
-   Real_t z8n[edgeElems][edgeElems][edgeElems][8];
+
 
    /* start loop over elements */
    Index_t i;

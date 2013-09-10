@@ -602,7 +602,7 @@ void CalcVolumeForceForElems()
          }
       }
 
-      CalcHourglassControlForElems(determ, hgcoef, m_x) ;
+      CalcHourglassControlForElems(determ, hgcoef) ;
 
       Release(&determ) ;
       Release(&sigzz) ;
