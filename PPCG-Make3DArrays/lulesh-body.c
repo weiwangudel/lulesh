@@ -132,23 +132,26 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 /*    compute the hourglass modes */
 
 
+   Real_t hgfx[8], hgfy[8], hgfz[8] ;
+
+   Real_t coefficient;
+
+   Real_t hourgam0[4], hourgam1[4], hourgam2[4], hourgam3[4] ;
+   Real_t hourgam4[4], hourgam5[4], hourgam6[4], hourgam7[4];
+   Real_t xd1[8], yd1[8], zd1[8] ;
+   Real_t ss1, mass1, volume13 ;
+   Index_t i3;
+   Real_t volinv;
+
    Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numElem, hourg) 
    #pragma scop
    for (i=0; i<edgeElems; ++i)                  //i.e. plane
       for (j=0; j<edgeElems; ++j)               //i.e. row
         for (k=0; k<edgeElems; ++k)   {           //i.e. col
-      Real_t hgfx[8], hgfy[8], hgfz[8] ;
 
-      Real_t coefficient;
-
-      Real_t hourgam0[4], hourgam1[4], hourgam2[4], hourgam3[4] ;
-      Real_t hourgam4[4], hourgam5[4], hourgam6[4], hourgam7[4];
-      Real_t xd1[8], yd1[8], zd1[8] ;
-
-      Index_t i3=8*(i*edgeElems*edgeElems+j*edgeElems+k);
-      Real_t volinv=(1.0)/determ[(i*edgeElems*edgeElems+j*edgeElems+k)];
-      Real_t ss1, mass1, volume13 ;
+      i3=8*(i*edgeElems*edgeElems+j*edgeElems+k);
+      volinv=(1.0)/determ[(i*edgeElems*edgeElems+j*edgeElems+k)];
       for(Index_t i1=0;i1<4;++i1){
 
          Real_t hourmodx =
