@@ -134,10 +134,10 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 
    Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numElem, hourg) 
+   #pragma scop
    for (i=0; i<edgeElems; ++i)                  //i.e. plane
       for (j=0; j<edgeElems; ++j)               //i.e. row
         for (k=0; k<edgeElems; ++k)   {           //i.e. col
-      Real_t *fx_local, *fy_local, *fz_local ;
       Real_t hgfx[8], hgfy[8], hgfz[8] ;
 
       Real_t coefficient;
@@ -210,7 +210,6 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       mass1=elemMass((i*edgeElems*edgeElems+j*edgeElems+k));
       volume13=CBRT(determ[(i*edgeElems*edgeElems+j*edgeElems+k)]);
 
-      const Index_t *elemToNode = nodelist((i*edgeElems*edgeElems+j*edgeElems+k));
       xd1[0] = m_xd[i][j][k];
       xd1[1] = m_xd[i][j][k+1];
       xd1[2] = m_xd[i][j+1][k+1];
@@ -421,37 +420,35 @@ void CalcFBHourglassForceForElems(Real_t *determ,
             hourgam7[i02] * h02 + hourgam7[i03] * h03);
       }
 
-      fx_local = &fx_elem[i3] ;
-      fx_local[0] = hgfx[0];
-      fx_local[1] = hgfx[1];
-      fx_local[2] = hgfx[2];
-      fx_local[3] = hgfx[3];
-      fx_local[4] = hgfx[4];
-      fx_local[5] = hgfx[5];
-      fx_local[6] = hgfx[6];
-      fx_local[7] = hgfx[7];
-
-      fy_local = &fy_elem[i3] ;
-      fy_local[0] = hgfy[0];
-      fy_local[1] = hgfy[1];
-      fy_local[2] = hgfy[2];
-      fy_local[3] = hgfy[3];
-      fy_local[4] = hgfy[4];
-      fy_local[5] = hgfy[5];
-      fy_local[6] = hgfy[6];
-      fy_local[7] = hgfy[7];
-
-      fz_local = &fz_elem[i3] ;
-      fz_local[0] = hgfz[0];
-      fz_local[1] = hgfz[1];
-      fz_local[2] = hgfz[2];
-      fz_local[3] = hgfz[3];
-      fz_local[4] = hgfz[4];
-      fz_local[5] = hgfz[5];
-      fz_local[6] = hgfz[6];
-      fz_local[7] = hgfz[7];
+      fx_elem[i3+0] = hgfx[0];
+      fx_elem[i3+1] = hgfx[1];
+      fx_elem[i3+2] = hgfx[2];
+      fx_elem[i3+3] = hgfx[3];
+      fx_elem[i3+4] = hgfx[4];
+      fx_elem[i3+5] = hgfx[5];
+      fx_elem[i3+6] = hgfx[6];
+      fx_elem[i3+7] = hgfx[7];
+              
+      fy_elem[i3+0] = hgfy[0];
+      fy_elem[i3+1] = hgfy[1];
+      fy_elem[i3+2] = hgfy[2];
+      fy_elem[i3+3] = hgfy[3];
+      fy_elem[i3+4] = hgfy[4];
+      fy_elem[i3+5] = hgfy[5];
+      fy_elem[i3+6] = hgfy[6];
+      fy_elem[i3+7] = hgfy[7];
+              
+      fz_elem[i3+0] = hgfz[0];
+      fz_elem[i3+1] = hgfz[1];
+      fz_elem[i3+2] = hgfz[2];
+      fz_elem[i3+3] = hgfz[3];
+      fz_elem[i3+4] = hgfz[4];
+      fz_elem[i3+5] = hgfz[5];
+      fz_elem[i3+6] = hgfz[6];
+      fz_elem[i3+7] = hgfz[7];
 
    }
+  #pragma endscop
 
   {
      Index_t numNode = numNode() ;
@@ -486,9 +483,6 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
 {
    Index_t numElem = numElem() ;
-   Index_t numElem8 = numElem * 8 ;
-   
-
 
    /* start loop over elements */
    Index_t i;
@@ -496,8 +490,7 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
    Index_t k;
    Real_t  x1[8],  y1[8],  z1[8] ;
    Real_t pfx[8], pfy[8], pfz[8] ;
-   Index_t ii,jj;
-   #pragma scop
+   //#pragma scop
    for (i=0; i<edgeElems; ++i) {                 //i.e. plane
       for (j=0; j<edgeElems; ++j) {              //i.e. row
         for (k=0; k<edgeElems; ++k)  {           //i.e. col
@@ -701,7 +694,7 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
    } //k
   } //j
  } //i
- #pragma endscop
+ //#pragma endscop
 
    if ( hgcoef > 0.0 ) {
       CalcFBHourglassForceForElems(determ,x8n,y8n,z8n,dvdx,dvdy,dvdz,hgcoef) ;
@@ -842,7 +835,6 @@ int main(int argc, char *argv[])
      for (Index_t j=0; j<edgeElems; ++j) 
       for (Index_t k=0; k<edgeElems; ++k) {
       Real_t x_local[8], y_local[8], z_local[8] ;
-      Index_t *elemToNode = nodelist(i*edgeElems*edgeElems+j*edgeElems+k) ;
       /* x_local,y_local,z_local */
       x_local[0] = m_x[i][j][k];                                                    
       x_local[1] = m_x[i][j][k+1];                                                  
@@ -875,6 +867,7 @@ int main(int argc, char *argv[])
       Real_t volume = CalcElemVolume_3(x_local, y_local, z_local );
       volo(i*edgeElems*edgeElems+j*edgeElems+k) = volume ;
       elemMass(i*edgeElems*edgeElems+j*edgeElems+k) = volume ;
+      Index_t *elemToNode = nodelist(i*edgeElems*edgeElems+j*edgeElems+k) ;
       for (Index_t l=0; l<8; ++l) {
          Index_t idx = elemToNode[l] ;
          nodalMass(idx) += volume / (8.0) ;
