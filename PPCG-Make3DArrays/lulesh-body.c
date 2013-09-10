@@ -71,83 +71,6 @@ Additional BSD Notice
 #define LULESH_SHOW_PROGRESS 0 
 
 
-/* Stuff needed for boundary conditions */
-/* 2 BCs on each of 6 hexahedral faces (12 bits) */
-
-
-
-void VoluDer(const Real_t x0, const Real_t x1, const Real_t x2,
-             const Real_t x3, const Real_t x4, const Real_t x5,
-             const Real_t y0, const Real_t y1, const Real_t y2,
-             const Real_t y3, const Real_t y4, const Real_t y5,
-             const Real_t z0, const Real_t z1, const Real_t z2,
-             const Real_t z3, const Real_t z4, const Real_t z5,
-             Real_t* dvdx, Real_t* dvdy, Real_t* dvdz)
-{
-   const Real_t twelfth = (1.0) / (12.0) ;
-
-   *dvdx =
-      (y1 + y2) * (z0 + z1) - (y0 + y1) * (z1 + z2) +
-      (y0 + y4) * (z3 + z4) - (y3 + y4) * (z0 + z4) -
-      (y2 + y5) * (z3 + z5) + (y3 + y5) * (z2 + z5);
-   *dvdy =
-      - (x1 + x2) * (z0 + z1) + (x0 + x1) * (z1 + z2) -
-      (x0 + x4) * (z3 + z4) + (x3 + x4) * (z0 + z4) +
-      (x2 + x5) * (z3 + z5) - (x3 + x5) * (z2 + z5);
-
-   *dvdz =
-      - (y1 + y2) * (x0 + x1) + (y0 + y1) * (x1 + x2) -
-      (y0 + y4) * (x3 + x4) + (y3 + y4) * (x0 + x4) +
-      (y2 + y5) * (x3 + x5) - (y3 + y5) * (x2 + x5);
-
-   *dvdx *= twelfth;
-   *dvdy *= twelfth;
-   *dvdz *= twelfth;
-}
-
-
-void CalcElemVolumeDerivative(Real_t dvdx[8],
-                              Real_t dvdy[8],
-                              Real_t dvdz[8],
-                              const Real_t x[8],
-                              const Real_t y[8],
-                              const Real_t z[8])
-{
-   VoluDer(x[1], x[2], x[3], x[4], x[5], x[7],
-           y[1], y[2], y[3], y[4], y[5], y[7],
-           z[1], z[2], z[3], z[4], z[5], z[7],
-           &dvdx[0], &dvdy[0], &dvdz[0]);
-   VoluDer(x[0], x[1], x[2], x[7], x[4], x[6],
-           y[0], y[1], y[2], y[7], y[4], y[6],
-           z[0], z[1], z[2], z[7], z[4], z[6],
-           &dvdx[3], &dvdy[3], &dvdz[3]);
-   VoluDer(x[3], x[0], x[1], x[6], x[7], x[5],
-           y[3], y[0], y[1], y[6], y[7], y[5],
-           z[3], z[0], z[1], z[6], z[7], z[5],
-           &dvdx[2], &dvdy[2], &dvdz[2]);
-   VoluDer(x[2], x[3], x[0], x[5], x[6], x[4],
-           y[2], y[3], y[0], y[5], y[6], y[4],
-           z[2], z[3], z[0], z[5], z[6], z[4],
-           &dvdx[1], &dvdy[1], &dvdz[1]);
-   VoluDer(x[7], x[6], x[5], x[0], x[3], x[1],
-           y[7], y[6], y[5], y[0], y[3], y[1],
-           z[7], z[6], z[5], z[0], z[3], z[1],
-           &dvdx[4], &dvdy[4], &dvdz[4]);
-   VoluDer(x[4], x[7], x[6], x[1], x[0], x[2],
-           y[4], y[7], y[6], y[1], y[0], y[2],
-           z[4], z[7], z[6], z[1], z[0], z[2],
-           &dvdx[5], &dvdy[5], &dvdz[5]);
-   VoluDer(x[5], x[4], x[7], x[2], x[1], x[3],
-           y[5], y[4], y[7], y[2], y[1], y[3],
-           z[5], z[4], z[7], z[2], z[1], z[3],
-           &dvdx[6], &dvdy[6], &dvdz[6]);
-   VoluDer(x[6], x[5], x[4], x[3], x[2], x[0],
-           y[6], y[5], y[4], y[3], y[2], y[0],
-           z[6], z[5], z[4], z[3], z[2], z[0],
-           &dvdx[7], &dvdy[7], &dvdz[7]);
-}
-
-
 void CalcElemFBHourglassForce(Real_t *xd, Real_t *yd, Real_t *zd,  Real_t *hourgam0,
                               Real_t *hourgam1, Real_t *hourgam2, Real_t *hourgam3,
                               Real_t *hourgam4, Real_t *hourgam5, Real_t *hourgam6,
@@ -500,10 +423,186 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 
       coefficient = - hourg * (0.01) * ss1 * mass1 / volume13;
 
-      CalcElemFBHourglassForce(xd1,yd1,zd1,
-                      hourgam0,hourgam1,hourgam2,hourgam3,
-                      hourgam4,hourgam5,hourgam6,hourgam7,
-                      coefficient, hgfx, hgfy, hgfz);
+      //CalcElemFBHourglassForce(xd1,yd1,zd1,
+      //                hourgam0,hourgam1,hourgam2,hourgam3,
+      //                hourgam4,hourgam5,hourgam6,hourgam7,
+      //                coefficient, hgfx, hgfy, hgfz);
+      {
+        Index_t i00=0;
+        Index_t i01=1;
+        Index_t i02=2;
+        Index_t i03=3;
+
+        Real_t h00 =
+           hourgam0[i00] * xd1[0] + hourgam1[i00] * xd1[1] +
+           hourgam2[i00] * xd1[2] + hourgam3[i00] * xd1[3] +
+           hourgam4[i00] * xd1[4] + hourgam5[i00] * xd1[5] +
+           hourgam6[i00] * xd1[6] + hourgam7[i00] * xd1[7];
+
+        Real_t h01 =
+           hourgam0[i01] * xd1[0] + hourgam1[i01] * xd1[1] +
+           hourgam2[i01] * xd1[2] + hourgam3[i01] * xd1[3] +
+           hourgam4[i01] * xd1[4] + hourgam5[i01] * xd1[5] +
+           hourgam6[i01] * xd1[6] + hourgam7[i01] * xd1[7];
+
+        Real_t h02 =
+           hourgam0[i02] * xd1[0] + hourgam1[i02] * xd1[1]+
+           hourgam2[i02] * xd1[2] + hourgam3[i02] * xd1[3]+
+           hourgam4[i02] * xd1[4] + hourgam5[i02] * xd1[5]+
+           hourgam6[i02] * xd1[6] + hourgam7[i02] * xd1[7];
+
+        Real_t h03 =
+           hourgam0[i03] * xd1[0] + hourgam1[i03] * xd1[1] +
+           hourgam2[i03] * xd1[2] + hourgam3[i03] * xd1[3] +
+           hourgam4[i03] * xd1[4] + hourgam5[i03] * xd1[5] +
+           hourgam6[i03] * xd1[6] + hourgam7[i03] * xd1[7];
+
+        hgfx[0] = coefficient *
+           (hourgam0[i00] * h00 + hourgam0[i01] * h01 +
+            hourgam0[i02] * h02 + hourgam0[i03] * h03);
+
+        hgfx[1] = coefficient *
+           (hourgam1[i00] * h00 + hourgam1[i01] * h01 +
+            hourgam1[i02] * h02 + hourgam1[i03] * h03);
+
+        hgfx[2] = coefficient *
+           (hourgam2[i00] * h00 + hourgam2[i01] * h01 +
+            hourgam2[i02] * h02 + hourgam2[i03] * h03);
+
+        hgfx[3] = coefficient *
+           (hourgam3[i00] * h00 + hourgam3[i01] * h01 +
+            hourgam3[i02] * h02 + hourgam3[i03] * h03);
+
+        hgfx[4] = coefficient *
+           (hourgam4[i00] * h00 + hourgam4[i01] * h01 +
+            hourgam4[i02] * h02 + hourgam4[i03] * h03);
+
+        hgfx[5] = coefficient *
+           (hourgam5[i00] * h00 + hourgam5[i01] * h01 +
+            hourgam5[i02] * h02 + hourgam5[i03] * h03);
+
+        hgfx[6] = coefficient *
+           (hourgam6[i00] * h00 + hourgam6[i01] * h01 +
+            hourgam6[i02] * h02 + hourgam6[i03] * h03);
+
+        hgfx[7] = coefficient *
+           (hourgam7[i00] * h00 + hourgam7[i01] * h01 +
+            hourgam7[i02] * h02 + hourgam7[i03] * h03);
+
+        h00 =
+           hourgam0[i00] * yd1[0] + hourgam1[i00] * yd1[1] +
+           hourgam2[i00] * yd1[2] + hourgam3[i00] * yd1[3] +
+           hourgam4[i00] * yd1[4] + hourgam5[i00] * yd1[5] +
+           hourgam6[i00] * yd1[6] + hourgam7[i00] * yd1[7];
+
+        h01 =
+           hourgam0[i01] * yd1[0] + hourgam1[i01] * yd1[1] +
+           hourgam2[i01] * yd1[2] + hourgam3[i01] * yd1[3] +
+           hourgam4[i01] * yd1[4] + hourgam5[i01] * yd1[5] +
+           hourgam6[i01] * yd1[6] + hourgam7[i01] * yd1[7];
+
+        h02 =
+           hourgam0[i02] * yd1[0] + hourgam1[i02] * yd1[1]+
+           hourgam2[i02] * yd1[2] + hourgam3[i02] * yd1[3]+
+           hourgam4[i02] * yd1[4] + hourgam5[i02] * yd1[5]+
+           hourgam6[i02] * yd1[6] + hourgam7[i02] * yd1[7];
+
+        h03 =
+           hourgam0[i03] * yd1[0] + hourgam1[i03] * yd1[1] +
+           hourgam2[i03] * yd1[2] + hourgam3[i03] * yd1[3] +
+           hourgam4[i03] * yd1[4] + hourgam5[i03] * yd1[5] +
+           hourgam6[i03] * yd1[6] + hourgam7[i03] * yd1[7];
+
+
+        hgfy[0] = coefficient *
+           (hourgam0[i00] * h00 + hourgam0[i01] * h01 +
+            hourgam0[i02] * h02 + hourgam0[i03] * h03);
+
+        hgfy[1] = coefficient *
+           (hourgam1[i00] * h00 + hourgam1[i01] * h01 +
+            hourgam1[i02] * h02 + hourgam1[i03] * h03);
+
+        hgfy[2] = coefficient *
+           (hourgam2[i00] * h00 + hourgam2[i01] * h01 +
+            hourgam2[i02] * h02 + hourgam2[i03] * h03);
+
+        hgfy[3] = coefficient *
+           (hourgam3[i00] * h00 + hourgam3[i01] * h01 +
+            hourgam3[i02] * h02 + hourgam3[i03] * h03);
+
+        hgfy[4] = coefficient *
+           (hourgam4[i00] * h00 + hourgam4[i01] * h01 +
+            hourgam4[i02] * h02 + hourgam4[i03] * h03);
+
+        hgfy[5] = coefficient *
+           (hourgam5[i00] * h00 + hourgam5[i01] * h01 +
+            hourgam5[i02] * h02 + hourgam5[i03] * h03);
+
+        hgfy[6] = coefficient *
+           (hourgam6[i00] * h00 + hourgam6[i01] * h01 +
+            hourgam6[i02] * h02 + hourgam6[i03] * h03);
+
+        hgfy[7] = coefficient *
+           (hourgam7[i00] * h00 + hourgam7[i01] * h01 +
+            hourgam7[i02] * h02 + hourgam7[i03] * h03);
+
+        h00 =
+           hourgam0[i00] * zd1[0] + hourgam1[i00] * zd1[1] +
+           hourgam2[i00] * zd1[2] + hourgam3[i00] * zd1[3] +
+           hourgam4[i00] * zd1[4] + hourgam5[i00] * zd1[5] +
+           hourgam6[i00] * zd1[6] + hourgam7[i00] * zd1[7];
+
+        h01 =
+           hourgam0[i01] * zd1[0] + hourgam1[i01] * zd1[1] +
+           hourgam2[i01] * zd1[2] + hourgam3[i01] * zd1[3] +
+           hourgam4[i01] * zd1[4] + hourgam5[i01] * zd1[5] +
+           hourgam6[i01] * zd1[6] + hourgam7[i01] * zd1[7];
+
+        h02 =
+           hourgam0[i02] * zd1[0] + hourgam1[i02] * zd1[1]+
+           hourgam2[i02] * zd1[2] + hourgam3[i02] * zd1[3]+
+           hourgam4[i02] * zd1[4] + hourgam5[i02] * zd1[5]+
+           hourgam6[i02] * zd1[6] + hourgam7[i02] * zd1[7];
+
+        h03 =
+           hourgam0[i03] * zd1[0] + hourgam1[i03] * zd1[1] +
+           hourgam2[i03] * zd1[2] + hourgam3[i03] * zd1[3] +
+           hourgam4[i03] * zd1[4] + hourgam5[i03] * zd1[5] +
+           hourgam6[i03] * zd1[6] + hourgam7[i03] * zd1[7];
+
+
+        hgfz[0] = coefficient *
+           (hourgam0[i00] * h00 + hourgam0[i01] * h01 +
+            hourgam0[i02] * h02 + hourgam0[i03] * h03);
+
+        hgfz[1] = coefficient *
+           (hourgam1[i00] * h00 + hourgam1[i01] * h01 +
+            hourgam1[i02] * h02 + hourgam1[i03] * h03);
+
+        hgfz[2] = coefficient *
+           (hourgam2[i00] * h00 + hourgam2[i01] * h01 +
+            hourgam2[i02] * h02 + hourgam2[i03] * h03);
+
+        hgfz[3] = coefficient *
+           (hourgam3[i00] * h00 + hourgam3[i01] * h01 +
+            hourgam3[i02] * h02 + hourgam3[i03] * h03);
+
+        hgfz[4] = coefficient *
+           (hourgam4[i00] * h00 + hourgam4[i01] * h01 +
+            hourgam4[i02] * h02 + hourgam4[i03] * h03);
+
+        hgfz[5] = coefficient *
+           (hourgam5[i00] * h00 + hourgam5[i01] * h01 +
+            hourgam5[i02] * h02 + hourgam5[i03] * h03);
+
+        hgfz[6] = coefficient *
+           (hourgam6[i00] * h00 + hourgam6[i01] * h01 +
+            hourgam6[i02] * h02 + hourgam6[i03] * h03);
+
+        hgfz[7] = coefficient *
+           (hourgam7[i00] * h00 + hourgam7[i01] * h01 +
+            hourgam7[i02] * h02 + hourgam7[i03] * h03);
+      }
 
       fx_local = &fx_elem[i3] ;
       fx_local[0] = hgfx[0];
