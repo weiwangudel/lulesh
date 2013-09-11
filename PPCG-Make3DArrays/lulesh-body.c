@@ -71,6 +71,303 @@ Additional BSD Notice
 #define LULESH_SHOW_PROGRESS 0 
 
 
+
+void IntegrateStressForElems( Index_t numElem,
+                              Real_t *sigxx, Real_t *sigyy, Real_t *sigzz,
+                              Real_t *determ)
+{
+   Index_t numElem8 = numElem * 8 ;
+   Real_t *fx_elem = Allocate(numElem8) ;
+   Real_t *fy_elem = Allocate(numElem8) ;
+   Real_t *fz_elem = Allocate(numElem8) ;
+   Real_t fjxxi, fjxet, fjxze;
+   Real_t fjyxi, fjyet, fjyze;
+   Real_t fjzxi, fjzet, fjzze;
+   Real_t cjxxi, cjxet, cjxze;
+   Real_t cjyxi, cjyet, cjyze;
+   Real_t cjzxi, cjzet, cjzze;
+
+  // loop over all elements
+  Index_t k;
+  Index_t j;
+  Index_t i;
+//Ori#pragma omp parallel for firstprivate(numElem)
+  //for( k=0 ; k<numElem ; ++k )
+
+  #pragma scop
+  for (i=0; i<edgeElems; ++i)
+    for (j=0; j<edgeElems; ++j)
+      for (k=0; k<edgeElems; ++k)
+  {
+    Real_t B[3][8] ;// shape function derivatives
+    Real_t x_local[8] ;
+    Real_t y_local[8] ;
+    Real_t z_local[8] ;
+
+    x_local[0] = m_x[i][j][k];                                                    
+    x_local[1] = m_x[i][j][k+1];                                                  
+    x_local[2] = m_x[i][j+1][k+1];                                                
+    x_local[3] = m_x[i][j+1][k];                                                  
+    x_local[4] = m_x[i+1][j][k];                                                  
+    x_local[5] = m_x[i+1][j][k+1];                                                
+    x_local[6] = m_x[i+1][j+1][k+1];                                              
+    x_local[7] = m_x[i+1][j+1][k];                                                
+
+    y_local[0] = m_y[i][j][k];                                                    
+    y_local[1] = m_y[i][j][k+1];                                                  
+    y_local[2] = m_y[i][j+1][k+1];                                                
+    y_local[3] = m_y[i][j+1][k];                                                  
+    y_local[4] = m_y[i+1][j][k];                                                  
+    y_local[5] = m_y[i+1][j][k+1];                                                
+    y_local[6] = m_y[i+1][j+1][k+1];                                              
+    y_local[7] = m_y[i+1][j+1][k];                                                
+
+    z_local[0] = m_z[i][j][k];                                                    
+    z_local[1] = m_z[i][j][k+1];                                                  
+    z_local[2] = m_z[i][j+1][k+1];                                                
+    z_local[3] = m_z[i][j+1][k];                                                  
+    z_local[4] = m_z[i+1][j][k];                                                  
+    z_local[5] = m_z[i+1][j][k+1];                                                
+    z_local[6] = m_z[i+1][j+1][k+1];                                              
+    z_local[7] = m_z[i+1][j+1][k];             
+
+    /* Volume calculation involves extra work for numerical consistency. */
+    //CalcElemShapeFunctionDerivatives(x_local, y_local, z_local,
+    //                                     B, &determ[WW]);
+    {
+
+
+    fjxxi = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
+    fjxet = .125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
+    fjxze = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) );
+
+    fjyxi = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
+    fjyet = .125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
+    fjyze = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) );
+
+    fjzxi = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
+    fjzet = .125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
+    fjzze = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) );
+
+    /* compute cofactors */
+    cjxxi =    (fjyet * fjzze) - (fjzet * fjyze);
+    cjxet =  - (fjyxi * fjzze) + (fjzxi * fjyze);
+    cjxze =    (fjyxi * fjzet) - (fjzxi * fjyet);
+
+    cjyxi =  - (fjxet * fjzze) + (fjzet * fjxze);
+    cjyet =    (fjxxi * fjzze) - (fjzxi * fjxze);
+    cjyze =  - (fjxxi * fjzet) + (fjzxi * fjxet);
+
+    cjzxi =    (fjxet * fjyze) - (fjyet * fjxze);
+    cjzet =  - (fjxxi * fjyze) + (fjyxi * fjxze);
+    cjzze =    (fjxxi * fjyet) - (fjyxi * fjxet);
+
+    /* calculate partials :
+       this need only be done for l = 0,1,2,3   since , by symmetry ,
+       (6,7,4,5) = - (0,1,2,3) .
+    */
+    B[0][0] =   -  cjxxi  -  cjxet  -  cjxze;
+    B[0][1] =      cjxxi  -  cjxet  -  cjxze;
+    B[0][2] =      cjxxi  +  cjxet  -  cjxze;
+    B[0][3] =   -  cjxxi  +  cjxet  -  cjxze;
+    B[0][4] = -B[0][2];
+    B[0][5] = -B[0][3];
+    B[0][6] = -B[0][0];
+    B[0][7] = -B[0][1];
+
+    B[1][0] =   -  cjyxi  -  cjyet  -  cjyze;
+    B[1][1] =      cjyxi  -  cjyet  -  cjyze;
+    B[1][2] =      cjyxi  +  cjyet  -  cjyze;
+    B[1][3] =   -  cjyxi  +  cjyet  -  cjyze;
+    B[1][4] = -B[1][2];
+    B[1][5] = -B[1][3];
+    B[1][6] = -B[1][0];
+    B[1][7] = -B[1][1];
+
+    B[2][0] =   -  cjzxi  -  cjzet  -  cjzze;
+    B[2][1] =      cjzxi  -  cjzet  -  cjzze;
+    B[2][2] =      cjzxi  +  cjzet  -  cjzze;
+    B[2][3] =   -  cjzxi  +  cjzet  -  cjzze;
+    B[2][4] = -B[2][2];
+    B[2][5] = -B[2][3];
+    B[2][6] = -B[2][0];
+    B[2][7] = -B[2][1];
+
+    /* calculate jacobian determinant (volume) */
+    determ[WW] = (8.) * ( fjxet * cjxet + fjyet * cjyet + fjzet * cjzet);
+
+    }
+
+    //CalcElemNodeNormals( B[0] , B[1], B[2],
+    //                      x_local, y_local, z_local );
+{
+   for (int ii = 0 ; ii < 8 ; ++ii) {
+      B[0][ii] = (0.0);
+      B[1][ii] = (0.0);
+      B[2][ii] = (0.0);
+   }
+   /* evaluate face one: nodes 0, 1, 2, 3 */
+   B[0][0] +=(0.25)*((0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])-(0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])); 
+   B[0][1] +=(0.25)*((0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])-(0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])); 
+   B[0][2] +=(0.25)*((0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])-(0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])); 
+   B[0][3] +=(0.25)*((0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])-(0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])); 
+
+   B[1][0] +=(0.25)*((0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0])-(0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])); 
+   B[1][1] +=(0.25)*((0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0])-(0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])); 
+   B[1][2] +=(0.25)*((0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0])-(0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])); 
+   B[1][3] +=(0.25)*((0.5)*(z_local[3]+z_local[2]-z_local[1]-z_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0])-(0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(z_local[2]+z_local[1]-z_local[3]-z_local[0])); 
+
+   B[2][0] +=(0.25)*((0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])-(0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0]));
+   B[2][1] +=(0.25)*((0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])-(0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0]));
+   B[2][2] +=(0.25)*((0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])-(0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0]));
+   B[2][3] +=(0.25)*((0.5)*(x_local[3]+x_local[2]-x_local[1]-x_local[0])*(0.5)*(y_local[2]+y_local[1]-y_local[3]-y_local[0])-(0.5)*(y_local[3]+y_local[2]-y_local[1]-y_local[0])*(0.5)*(x_local[2]+x_local[1]-x_local[3]-x_local[0]));
+
+   /* evaluate face two: nodes 0, 4, 5, 1 */
+   B[0][0] +=(0.25)*((0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])-(0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])); 
+   B[0][4] +=(0.25)*((0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])-(0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])); 
+   B[0][5] +=(0.25)*((0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])-(0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])); 
+   B[0][1] +=(0.25)*((0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])-(0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])); 
+
+   B[1][0] +=(0.25)*((0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0])-(0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])); 
+   B[1][4] +=(0.25)*((0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0])-(0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])); 
+   B[1][5] +=(0.25)*((0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0])-(0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])); 
+   B[1][1] +=(0.25)*((0.5)*(z_local[1]+z_local[5]-z_local[4]-z_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0])-(0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(z_local[5]+z_local[4]-z_local[1]-z_local[0])); 
+
+   B[2][0] +=(0.25)*((0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])-(0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0]));
+   B[2][4] +=(0.25)*((0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])-(0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0]));
+   B[2][5] +=(0.25)*((0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])-(0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0]));
+   B[2][1] +=(0.25)*((0.5)*(x_local[1]+x_local[5]-x_local[4]-x_local[0])*(0.5)*(y_local[5]+y_local[4]-y_local[1]-y_local[0])-(0.5)*(y_local[1]+y_local[5]-y_local[4]-y_local[0])*(0.5)*(x_local[5]+x_local[4]-x_local[1]-x_local[0]));
+
+   /* evaluate face three: nodes 1, 5, 6, 2 */
+   B[0][1] +=(0.25)*((0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])-(0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])); 
+   B[0][5] +=(0.25)*((0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])-(0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])); 
+   B[0][6] +=(0.25)*((0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])-(0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])); 
+   B[0][2] +=(0.25)*((0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])-(0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])); 
+
+   B[1][1] +=(0.25)*((0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1])-(0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])); 
+   B[1][5] +=(0.25)*((0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1])-(0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])); 
+   B[1][6] +=(0.25)*((0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1])-(0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])); 
+   B[1][2] +=(0.25)*((0.5)*(z_local[2]+z_local[6]-z_local[5]-z_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1])-(0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(z_local[6]+z_local[5]-z_local[2]-z_local[1])); 
+
+   B[2][1] +=(0.25)*((0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])-(0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1]));
+   B[2][5] +=(0.25)*((0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])-(0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1]));
+   B[2][6] +=(0.25)*((0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])-(0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1]));
+   B[2][2] +=(0.25)*((0.5)*(x_local[2]+x_local[6]-x_local[5]-x_local[1])*(0.5)*(y_local[6]+y_local[5]-y_local[2]-y_local[1])-(0.5)*(y_local[2]+y_local[6]-y_local[5]-y_local[1])*(0.5)*(x_local[6]+x_local[5]-x_local[2]-x_local[1]));
+
+   /* evaluate face four: nodes 2, 6, 7, 3 */
+   B[0][2] +=(0.25)*((0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])-(0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])); 
+   B[0][6] +=(0.25)*((0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])-(0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])); 
+   B[0][7] +=(0.25)*((0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])-(0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])); 
+   B[0][3] +=(0.25)*((0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])-(0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])); 
+
+   B[1][2] +=(0.25)*((0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2])-(0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])); 
+   B[1][6] +=(0.25)*((0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2])-(0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])); 
+   B[1][7] +=(0.25)*((0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2])-(0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])); 
+   B[1][3] +=(0.25)*((0.5)*(z_local[3]+z_local[7]-z_local[6]-z_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2])-(0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(z_local[7]+z_local[6]-z_local[3]-z_local[2])); 
+
+   B[2][2] +=(0.25)*((0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])-(0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2]));
+   B[2][6] +=(0.25)*((0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])-(0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2]));
+   B[2][7] +=(0.25)*((0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])-(0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2]));
+   B[2][3] +=(0.25)*((0.5)*(x_local[3]+x_local[7]-x_local[6]-x_local[2])*(0.5)*(y_local[7]+y_local[6]-y_local[3]-y_local[2])-(0.5)*(y_local[3]+y_local[7]-y_local[6]-y_local[2])*(0.5)*(x_local[7]+x_local[6]-x_local[3]-x_local[2]));
+
+   /* evaluate face five: nodes 3, 7, 4, 0 */
+   B[0][3] +=(0.25)*((0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])-(0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])); 
+   B[0][7] +=(0.25)*((0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])-(0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])); 
+   B[0][4] +=(0.25)*((0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])-(0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])); 
+   B[0][0] +=(0.25)*((0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])-(0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])); 
+
+   B[1][3] +=(0.25)*((0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3])-(0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])); 
+   B[1][7] +=(0.25)*((0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3])-(0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])); 
+   B[1][4] +=(0.25)*((0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3])-(0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])); 
+   B[1][0] +=(0.25)*((0.5)*(z_local[0]+z_local[4]-z_local[7]-z_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3])-(0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(z_local[4]+z_local[7]-z_local[0]-z_local[3])); 
+
+   B[2][3] +=(0.25)*((0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])-(0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3]));
+   B[2][7] +=(0.25)*((0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])-(0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3]));
+   B[2][4] +=(0.25)*((0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])-(0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3]));
+   B[2][0] +=(0.25)*((0.5)*(x_local[0]+x_local[4]-x_local[7]-x_local[3])*(0.5)*(y_local[4]+y_local[7]-y_local[0]-y_local[3])-(0.5)*(y_local[0]+y_local[4]-y_local[7]-y_local[3])*(0.5)*(x_local[4]+x_local[7]-x_local[0]-x_local[3]));
+
+   /* evaluate face six_local: nodes 4, 7, 6, 5 */
+   B[0][4] +=(0.25)*((0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])-(0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])); 
+   B[0][7] +=(0.25)*((0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])-(0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])); 
+   B[0][6] +=(0.25)*((0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])-(0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])); 
+   B[0][5] +=(0.25)*((0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])-(0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])); 
+
+   B[1][4] +=(0.25)*((0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4])-(0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])); 
+   B[1][7] +=(0.25)*((0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4])-(0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])); 
+   B[1][6] +=(0.25)*((0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4])-(0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])); 
+   B[1][5] +=(0.25)*((0.5)*(z_local[5]+z_local[6]-z_local[7]-z_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4])-(0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(z_local[6]+z_local[7]-z_local[5]-z_local[4])); 
+
+   B[2][4] +=(0.25)*((0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])-(0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4]));
+   B[2][7] +=(0.25)*((0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])-(0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4]));
+   B[2][6] +=(0.25)*((0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])-(0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4]));
+   B[2][5] +=(0.25)*((0.5)*(x_local[5]+x_local[6]-x_local[7]-x_local[4])*(0.5)*(y_local[6]+y_local[7]-y_local[5]-y_local[4])-(0.5)*(y_local[5]+y_local[6]-y_local[7]-y_local[4])*(0.5)*(x_local[6]+x_local[7]-x_local[5]-x_local[4]));
+}
+
+
+
+    //SumElemStressesToNodeForces( B, sigxx[(WW)], sigyy[(WW)], sigzz[(WW)],
+    //                             &fx_elem[(WW)*8], &fy_elem[(WW)*8], &fz_elem[(WW)*8] ) ;
+    {
+    fx_elem[WW*8+0] = -( sigxx[WW] * B[0][0]);                                     
+    fx_elem[WW*8+1] = -( sigxx[WW] * B[0][1]);                                     
+    fx_elem[WW*8+2] = -( sigxx[WW] * B[0][2]);                                     
+    fx_elem[WW*8+3] = -( sigxx[WW] * B[0][3]);                                     
+    fx_elem[WW*8+4] = -( sigxx[WW] * B[0][4]);                                     
+    fx_elem[WW*8+5] = -( sigxx[WW] * B[0][5]);                                     
+    fx_elem[WW*8+6] = -( sigxx[WW] * B[0][6]);                                     
+    fx_elem[WW*8+7] = -( sigxx[WW] * B[0][7]);                                     
+                                                                                   
+    fy_elem[WW*8+0] = -( sigyy[WW] * B[1][0] );                                    
+    fy_elem[WW*8+1] = -( sigyy[WW] * B[1][1] );                                    
+    fy_elem[WW*8+2] = -( sigyy[WW] * B[1][2] );                                    
+    fy_elem[WW*8+3] = -( sigyy[WW] * B[1][3] );                                    
+    fy_elem[WW*8+4] = -( sigyy[WW] * B[1][4] );                                    
+    fy_elem[WW*8+5] = -( sigyy[WW] * B[1][5] );                                    
+    fy_elem[WW*8+6] = -( sigyy[WW] * B[1][6] );                                    
+    fy_elem[WW*8+7] = -( sigyy[WW] * B[1][7] );                                    
+                                                                                   
+    fz_elem[WW*8+0] = -( sigzz[WW] * B[2][0]);                                     
+    fz_elem[WW*8+1] = -( sigzz[WW] * B[2][1]);                                     
+    fz_elem[WW*8+2] = -( sigzz[WW] * B[2][2]);                                     
+    fz_elem[WW*8+3] = -( sigzz[WW] * B[2][3]);                                     
+    fz_elem[WW*8+4] = -( sigzz[WW] * B[2][4]);                                     
+    fz_elem[WW*8+5] = -( sigzz[WW] * B[2][5]);                                     
+    fz_elem[WW*8+6] = -( sigzz[WW] * B[2][6]);                                     
+    fz_elem[WW*8+7] = -( sigzz[WW] * B[2][7]);
+    }
+
+  }
+  #pragma endscop
+
+  {
+     Index_t numNode = numNode() ;
+
+     Index_t gnode;
+//Ori#pragma omp parallel for firstprivate(numNode)
+     for( gnode=0 ; gnode<numNode ; ++gnode )
+     {
+        Index_t count = nodeElemCount(gnode) ;
+        Index_t start = nodeElemStart(gnode) ;
+        Real_t fx = (0.0) ;
+        Real_t fy = (0.0) ;
+        Real_t fz = (0.0) ;
+        for (Index_t i=0 ; i < count ; ++i) {
+           Index_t elem = nodeElemCornerList(start+i) ;
+           fx += fx_elem[elem] ;
+           fy += fy_elem[elem] ;
+           fz += fz_elem[elem] ;
+        }
+        fx(gnode) = fx ;
+        fy(gnode) = fy ;
+        fz(gnode) = fz ;
+     }
+  }
+
+  Release(&fz_elem) ;
+  Release(&fy_elem) ;
+  Release(&fx_elem) ;
+}
+
 void CalcFBHourglassForceForElems(Real_t *determ,
             Real_t x8n[edgeElems][edgeElems][edgeElems][8],
             Real_t y8n[edgeElems][edgeElems][edgeElems][8],
@@ -145,7 +442,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 
    Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numElem, hourg) 
-   #pragma scop
+   //#pragma scop
    for (i=0; i<edgeElems; ++i)                  //i.e. plane
       for (j=0; j<edgeElems; ++j)               //i.e. row
         for (k=0; k<edgeElems; ++k)   {           //i.e. col
@@ -451,7 +748,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       fz_elem[i3+7] = hgfz[7];
 
    }
-  #pragma endscop
+  //#pragma endscop
 
   {
      Index_t numNode = numNode() ;
@@ -800,7 +1097,7 @@ int main(int argc, char *argv[])
    deltatime() = (1.0e-7) ;
    deltatimemultlb() = (1.1) ;
    deltatimemultub() = (1.2) ;
-   stoptime()  = (1.0e-2) ;
+   stoptime()  = (1.0e-4) ;
    dtcourant() = (1.0e+20) ;
    dthydro()   = (1.0e+20) ;
    dtmax()     = (1.0e-2) ;

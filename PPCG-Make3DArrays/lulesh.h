@@ -265,3 +265,5 @@ Real_t z8n[edgeElems][edgeElems][edgeElems][8];
 #define ZETA_P_FREE 0x800
 
 void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef);
+void IntegrateStressForElems(
+     Index_t numElem, Real_t *sigxx, Real_t *sigyy, Real_t *sigzz, Real_t *determ);
