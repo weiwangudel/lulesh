@@ -1,6 +1,6 @@
 #define edgeElems  45 
 #define edgeNodes  46 
-
+#define WW (i*edgeElems*edgeElems+j*edgeElems+k)                                 
 
 #define   x(i,j,k)    m_x[i][j][k] 
 #define   y(i,j,k)    m_y[i][j][k]

@@ -150,8 +150,8 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       for (j=0; j<edgeElems; ++j)               //i.e. row
         for (k=0; k<edgeElems; ++k)   {           //i.e. col
 
-      i3=8*(i*edgeElems*edgeElems+j*edgeElems+k);
-      volinv=(1.0)/determ[(i*edgeElems*edgeElems+j*edgeElems+k)];
+      i3=8*(WW);
+      volinv=(1.0)/determ[(WW)];
       for(Index_t i1=0;i1<4;++i1){
 
          Real_t hourmodx =
@@ -209,9 +209,9 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       /* compute forces */
       /* store forces into h arrays (force arrays) */
 
-      ss1=ss((i*edgeElems*edgeElems+j*edgeElems+k));
-      mass1=elemMass((i*edgeElems*edgeElems+j*edgeElems+k));
-      volume13=CBRT(determ[(i*edgeElems*edgeElems+j*edgeElems+k)]);
+      ss1=ss((WW));
+      mass1=elemMass((WW));
+      volume13=CBRT(determ[(WW)]);
 
       xd1[0] = m_xd[i][j][k];
       xd1[1] = m_xd[i][j][k+1];
@@ -688,10 +688,10 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
          y8n[i][j][k][7]  = y1[7];
          z8n[i][j][k][7]  = z1[7];
 
-      determ[i*edgeElems*edgeElems+j*edgeElems+k] = volo(i*edgeElems*edgeElems+j*edgeElems+k) * v(i*edgeElems*edgeElems+j*edgeElems+k);
+      determ[WW] = volo(WW) * v(WW);
 
       /* Do a check for negative volumes */ /* should be add back sometime */
-      //if ( v(i*edgeElems*edgeElems+j*edgeElems+k) <= (0.0) ) {
+      //if ( v(WW) <= (0.0) ) {
       //   exit(VolumeError) ;
       //}
    } //k
@@ -868,9 +868,9 @@ int main(int argc, char *argv[])
 
       // volume calculations
       Real_t volume = CalcElemVolume_3(x_local, y_local, z_local );
-      volo(i*edgeElems*edgeElems+j*edgeElems+k) = volume ;
-      elemMass(i*edgeElems*edgeElems+j*edgeElems+k) = volume ;
-      Index_t *elemToNode = nodelist(i*edgeElems*edgeElems+j*edgeElems+k) ;
+      volo(WW) = volume ;
+      elemMass(WW) = volume ;
+      Index_t *elemToNode = nodelist(WW) ;
       for (Index_t l=0; l<8; ++l) {
          Index_t idx = elemToNode[l] ;
          nodalMass(idx) += volume / (8.0) ;

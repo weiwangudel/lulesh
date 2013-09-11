@@ -536,13 +536,83 @@ void IntegrateStressForElems( Index_t numElem,
     z_local[7] = m_z[i+1][j+1][k];             
 
     /* Volume calculation involves extra work for numerical consistency. */
-    CalcElemShapeFunctionDerivatives(x_local, y_local, z_local,
-                                         B, &determ[i*edgeElems*edgeElems+j*edgeElems+k]);
+    //CalcElemShapeFunctionDerivatives(x_local, y_local, z_local,
+    //                                     B, &determ[WW]);
+    {
+
+    Real_t fjxxi, fjxet, fjxze;
+    Real_t fjyxi, fjyet, fjyze;
+    Real_t fjzxi, fjzet, fjzze;
+    Real_t cjxxi, cjxet, cjxze;
+    Real_t cjyxi, cjyet, cjyze;
+    Real_t cjzxi, cjzet, cjzze;
+
+    fjxxi = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
+    fjxet = .125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
+    fjxze = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) );
+
+    fjyxi = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
+    fjyet = .125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
+    fjyze = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) );
+
+    fjzxi = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
+    fjzet = .125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
+    fjzze = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) );
+
+    /* compute cofactors */
+    cjxxi =    (fjyet * fjzze) - (fjzet * fjyze);
+    cjxet =  - (fjyxi * fjzze) + (fjzxi * fjyze);
+    cjxze =    (fjyxi * fjzet) - (fjzxi * fjyet);
+
+    cjyxi =  - (fjxet * fjzze) + (fjzet * fjxze);
+    cjyet =    (fjxxi * fjzze) - (fjzxi * fjxze);
+    cjyze =  - (fjxxi * fjzet) + (fjzxi * fjxet);
+
+    cjzxi =    (fjxet * fjyze) - (fjyet * fjxze);
+    cjzet =  - (fjxxi * fjyze) + (fjyxi * fjxze);
+    cjzze =    (fjxxi * fjyet) - (fjyxi * fjxet);
+
+    /* calculate partials :
+       this need only be done for l = 0,1,2,3   since , by symmetry ,
+       (6,7,4,5) = - (0,1,2,3) .
+    */
+    B[0][0] =   -  cjxxi  -  cjxet  -  cjxze;
+    B[0][1] =      cjxxi  -  cjxet  -  cjxze;
+    B[0][2] =      cjxxi  +  cjxet  -  cjxze;
+    B[0][3] =   -  cjxxi  +  cjxet  -  cjxze;
+    B[0][4] = -B[0][2];
+    B[0][5] = -B[0][3];
+    B[0][6] = -B[0][0];
+    B[0][7] = -B[0][1];
+
+    B[1][0] =   -  cjyxi  -  cjyet  -  cjyze;
+    B[1][1] =      cjyxi  -  cjyet  -  cjyze;
+    B[1][2] =      cjyxi  +  cjyet  -  cjyze;
+    B[1][3] =   -  cjyxi  +  cjyet  -  cjyze;
+    B[1][4] = -B[1][2];
+    B[1][5] = -B[1][3];
+    B[1][6] = -B[1][0];
+    B[1][7] = -B[1][1];
+
+    B[2][0] =   -  cjzxi  -  cjzet  -  cjzze;
+    B[2][1] =      cjzxi  -  cjzet  -  cjzze;
+    B[2][2] =      cjzxi  +  cjzet  -  cjzze;
+    B[2][3] =   -  cjzxi  +  cjzet  -  cjzze;
+    B[2][4] = -B[2][2];
+    B[2][5] = -B[2][3];
+    B[2][6] = -B[2][0];
+    B[2][7] = -B[2][1];
+
+    /* calculate jacobian determinant (volume) */
+    determ[WW] = (8.) * ( fjxet * cjxet + fjyet * cjyet + fjzet * cjzet);
+
+    }
+
     CalcElemNodeNormals( B[0] , B[1], B[2],
                           x_local, y_local, z_local );
 
-    SumElemStressesToNodeForces( B, sigxx[(i*edgeElems*edgeElems+j*edgeElems+k)], sigyy[(i*edgeElems*edgeElems+j*edgeElems+k)], sigzz[(i*edgeElems*edgeElems+j*edgeElems+k)],
-                                 &fx_elem[(i*edgeElems*edgeElems+j*edgeElems+k)*8], &fy_elem[(i*edgeElems*edgeElems+j*edgeElems+k)*8], &fz_elem[(i*edgeElems*edgeElems+j*edgeElems+k)*8] ) ;
+    SumElemStressesToNodeForces( B, sigxx[(WW)], sigyy[(WW)], sigzz[(WW)],
+                                 &fx_elem[(WW)*8], &fy_elem[(WW)*8], &fz_elem[(WW)*8] ) ;
 
   }
 
@@ -1004,17 +1074,17 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 
     // volume calculations
     volume = CalcElemVolume_3(x_local, y_local, z_local );
-    relativeVolume = volume / volo((i*edgeElems*edgeElems+j*edgeElems+k)) ;
-    vnew((i*edgeElems*edgeElems+j*edgeElems+k)) = relativeVolume ;
-    delv((i*edgeElems*edgeElems+j*edgeElems+k)) = relativeVolume - v((i*edgeElems*edgeElems+j*edgeElems+k)) ;
+    relativeVolume = volume / volo((WW)) ;
+    vnew((WW)) = relativeVolume ;
+    delv((WW)) = relativeVolume - v((WW)) ;
 
     // set characteristic length
-    arealg((i*edgeElems*edgeElems+j*edgeElems+k)) = CalcElemCharacteristicLength(x_local,
+    arealg((WW)) = CalcElemCharacteristicLength(x_local,
                                                   y_local,
                                                   z_local,
                                                   volume);
     
-    //const Index_t *elemToNode = nodelist(i*edgeElems*edgeElems+j*edgeElems+k);
+    //const Index_t *elemToNode = nodelist(WW);
     //for( Index_t lnode=0 ; lnode<8 ; ++lnode )
     //{
     //  Index_t gnode = elemToNode[lnode];
@@ -1069,9 +1139,9 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
                                B, detJ, D );
 
     // put velocity gradient quantities into their global arrays.
-    dxx((i*edgeElems*edgeElems+j*edgeElems+k)) = D[0];
-    dyy((i*edgeElems*edgeElems+j*edgeElems+k)) = D[1];
-    dzz((i*edgeElems*edgeElems+j*edgeElems+k)) = D[2];
+    dxx((WW)) = D[0];
+    dyy((WW)) = D[1];
+    dzz((WW)) = D[2];
   }
 }
 
@@ -1179,7 +1249,7 @@ void CalcMonotonicQGradientsForElems()
       Real_t zv6 = m_zd[i+1][j+1][k+1];   
       Real_t zv7 = m_zd[i+1][j+1][k];     
 
-      Real_t vol = volo(i*edgeElems*edgeElems+j*edgeElems+k)*vnew(i*edgeElems*edgeElems+j*edgeElems+k) ;
+      Real_t vol = volo(WW)*vnew(WW) ;
       Real_t norm = (1.0) / ( vol + ptiny ) ;
 
       Real_t dxj = (-0.25)*(SUM4(x0,x1,x5,x4) - SUM4(x3,x2,x6,x7)) ;
@@ -1200,7 +1270,7 @@ void CalcMonotonicQGradientsForElems()
       ay = dzi*dxj - dxi*dzj ;
       az = dxi*dyj - dyi*dxj ;
 
-      delx_zeta(i*edgeElems*edgeElems+j*edgeElems+k) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+      delx_zeta(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
       ax *= norm ;
       ay *= norm ;
@@ -1210,7 +1280,7 @@ void CalcMonotonicQGradientsForElems()
       dyv = (0.25)*(SUM4(yv4,yv5,yv6,yv7) - SUM4(yv0,yv1,yv2,yv3)) ;
       dzv = (0.25)*(SUM4(zv4,zv5,zv6,zv7) - SUM4(zv0,zv1,zv2,zv3)) ;
 
-      delv_zeta(i*edgeElems*edgeElems+j*edgeElems+k) = ax*dxv + ay*dyv + az*dzv ;
+      delv_zeta(WW) = ax*dxv + ay*dyv + az*dzv ;
 
       /* find delxi and delvi ( j cross k ) */
 
@@ -1218,7 +1288,7 @@ void CalcMonotonicQGradientsForElems()
       ay = dzj*dxk - dxj*dzk ;
       az = dxj*dyk - dyj*dxk ;
 
-      delx_xi(i*edgeElems*edgeElems+j*edgeElems+k) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+      delx_xi(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
       ax *= norm ;
       ay *= norm ;
@@ -1228,7 +1298,7 @@ void CalcMonotonicQGradientsForElems()
       dyv = (0.25)*(SUM4(yv1,yv2,yv6,yv5) - SUM4(yv0,yv3,yv7,yv4)) ;
       dzv = (0.25)*(SUM4(zv1,zv2,zv6,zv5) - SUM4(zv0,zv3,zv7,zv4)) ;
 
-      delv_xi(i*edgeElems*edgeElems+j*edgeElems+k) = ax*dxv + ay*dyv + az*dzv ;
+      delv_xi(WW) = ax*dxv + ay*dyv + az*dzv ;
 
       /* find delxj and delvj ( k cross i ) */
 
@@ -1236,7 +1306,7 @@ void CalcMonotonicQGradientsForElems()
       ay = dzk*dxi - dxk*dzi ;
       az = dxk*dyi - dyk*dxi ;
 
-      delx_eta(i*edgeElems*edgeElems+j*edgeElems+k) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+      delx_eta(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
       ax *= norm ;
       ay *= norm ;
@@ -1246,7 +1316,7 @@ void CalcMonotonicQGradientsForElems()
       dyv = (-0.25)*(SUM4(yv0,yv1,yv5,yv4) - SUM4(yv3,yv2,yv6,yv7)) ;
       dzv = (-0.25)*(SUM4(zv0,zv1,zv5,zv4) - SUM4(zv3,zv2,zv6,zv7)) ;
 
-      delv_eta(i*edgeElems*edgeElems+j*edgeElems+k) = ax*dxv + ay*dyv + az*dzv ;
+      delv_eta(WW) = ax*dxv + ay*dyv + az*dzv ;
    }
 #undef SUM4
 }
