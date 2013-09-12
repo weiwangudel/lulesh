@@ -75,21 +75,29 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 {
   // loop over all elements
   Index_t i,j,k;
+  Real_t B[3][8] ; /** shape function derivatives */
+  Real_t D[6] ;
+  Real_t x_local[8] ;
+  Real_t y_local[8] ;
+  Real_t z_local[8] ;
+  Real_t xd_local[8] ;
+  Real_t yd_local[8] ;
+  Real_t zd_local[8] ;
+  Real_t detJ = (0.0) ;
+  Real_t fjxxi; Real_t fjxet; Real_t fjxze;
+  Real_t fjyxi; Real_t fjyet; Real_t fjyze;
+  Real_t fjzxi; Real_t fjzet; Real_t fjzze;
+  Real_t cjxxi; Real_t cjxet; Real_t cjxze;
+  Real_t cjyxi; Real_t cjyet; Real_t cjyze;
+  Real_t cjzxi; Real_t cjzet; Real_t cjzze;
+  Real_t inv_detJ;
+  Real_t dyddx;Real_t dxddy;Real_t dzddx;Real_t dxddz;Real_t dzddy;Real_t dyddz;
 //#pragma omp parallel for firstprivate(numElem, dt)
 #pragma scop
   for( i=0 ; i<edgeElems ; ++i )
     for( j=0 ; j<edgeElems ; ++j )
       for( k=0 ; k<edgeElems ; ++k )
   {
-     Real_t B[3][8] ; /** shape function derivatives */
-     Real_t D[6] ;
-     Real_t x_local[8] ;
-     Real_t y_local[8] ;
-     Real_t z_local[8] ;
-     Real_t xd_local[8] ;
-     Real_t yd_local[8] ;
-     Real_t zd_local[8] ;
-     Real_t detJ = (0.0) ;
 
     Real_t volume;
     Real_t relativeVolume ;
@@ -243,12 +251,6 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     //                                      z_local,
     //                                      B, &detJ );
 {
-  Real_t fjxxi; Real_t fjxet; Real_t fjxze;
-  Real_t fjyxi; Real_t fjyet; Real_t fjyze;
-  Real_t fjzxi; Real_t fjzet; Real_t fjzze;
-  Real_t cjxxi; Real_t cjxet; Real_t cjxze;
-  Real_t cjyxi; Real_t cjyet; Real_t cjyze;
-  Real_t cjzxi; Real_t cjzet; Real_t cjzze;
 
   fjxxi = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
   fjxet = .125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
@@ -315,8 +317,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     //                           zd_local,
     //                           B, detJ, D );
 {
-  const Real_t inv_detJ = (1.0) / detJ ;
-  Real_t dyddx;Real_t dxddy;Real_t dzddx;Real_t dxddz;Real_t dzddy;Real_t dyddz;
+  inv_detJ = (1.0) / detJ ;
 
   D[0] = inv_detJ * ( B[0][0] * (xd_local[0]-xd_local[6])
                     + B[0][1] * (xd_local[1]-xd_local[7])
