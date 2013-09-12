@@ -15,25 +15,20 @@ ApplyAccelerationBoundaryConditionsForNodes	lulesh-others.c	/^void ApplyAccelera
 ApplyMaterialPropertiesForElems	lulesh-others.c	/^void ApplyMaterialPropertiesForElems()$/;"	f
 AreaFace	lulesh-others.c	/^Real_t AreaFace( const Real_t x0, const Real_t x1,$/;"	f
 CBRT	lulesh.h	116;"	d
-CalcAccelerationForNodes	lulesh-others.c	/^void CalcAccelerationForNodes()$/;"	f
+CalcAccelerationForNodes	lulesh-body.c	/^void CalcAccelerationForNodes()$/;"	f
 CalcCourantConstraintForElems	lulesh-others.c	/^void CalcCourantConstraintForElems()$/;"	f
 CalcElemCharacteristicLength	lulesh-others.c	/^Real_t CalcElemCharacteristicLength( const Real_t x[8],$/;"	f
-CalcElemFBHourglassForce	lulesh-body.c	/^void CalcElemFBHourglassForce(Real_t *xd, Real_t *yd, Real_t *zd,  Real_t *hourgam0,$/;"	f
-CalcElemNodeNormals	lulesh-others.c	/^void CalcElemNodeNormals(Real_t pfx[8],$/;"	f
-CalcElemShapeFunctionDerivatives	lulesh-others.c	/^void CalcElemShapeFunctionDerivatives( const Real_t* const x,$/;"	f
-CalcElemVelocityGrandient	lulesh-others.c	/^void CalcElemVelocityGrandient( const Real_t* const xvel,$/;"	f
 CalcElemVolume	lulesh-others.c	/^Real_t CalcElemVolume( const Real_t x0, const Real_t x1,$/;"	f
-CalcElemVolumeDerivative	lulesh-body.c	/^void CalcElemVolumeDerivative(Real_t dvdx[8],$/;"	f
 CalcElemVolume_3	lulesh-others.c	/^Real_t CalcElemVolume_3( const Real_t x[8], const Real_t y[8], const Real_t z[8] )$/;"	f
 CalcEnergyForElems	lulesh-others.c	/^void CalcEnergyForElems(Real_t* p_new, Real_t* e_new, Real_t* q_new,$/;"	f
 CalcFBHourglassForceForElems	lulesh-body.c	/^void CalcFBHourglassForceForElems(Real_t *determ,$/;"	f
 CalcForceForNodes	lulesh-others.c	/^ void CalcForceForNodes()$/;"	f
-CalcHourglassControlForElems	lulesh-body.c	/^void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef, Real_t m_x[edgeNodes][edgeNodes][edgeNodes])$/;"	f
+CalcHourglassControlForElems	lulesh-body.c	/^void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)$/;"	f
 CalcHydroConstraintForElems	lulesh-others.c	/^void CalcHydroConstraintForElems()$/;"	f
-CalcKinematicsForElems	lulesh-others.c	/^void CalcKinematicsForElems( Index_t numElem, Real_t dt )$/;"	f
+CalcKinematicsForElems	lulesh-body.c	/^void CalcKinematicsForElems( Index_t numElem, Real_t dt )$/;"	f
 CalcLagrangeElements	lulesh-others.c	/^void CalcLagrangeElements(Real_t deltatime)$/;"	f
 CalcMonotonicQForElems	lulesh-others.c	/^void CalcMonotonicQForElems()$/;"	f
-CalcMonotonicQGradientsForElems	lulesh-others.c	/^void CalcMonotonicQGradientsForElems()$/;"	f
+CalcMonotonicQGradientsForElems	lulesh-body.c	/^void CalcMonotonicQGradientsForElems()$/;"	f
 CalcMonotonicQRegionForElems	lulesh-others.c	/^void CalcMonotonicQRegionForElems(\/\/ parameters$/;"	f
 CalcPositionForNodes	lulesh-others.c	/^void CalcPositionForNodes(const Real_t dt)$/;"	f
 CalcPressureForElems	lulesh-others.c	/^void CalcPressureForElems(Real_t* p_new, Real_t* bvc,$/;"	f
@@ -42,18 +37,18 @@ CalcSoundSpeedForElems	lulesh-others.c	/^void CalcSoundSpeedForElems(Real_t *vne
 CalcTimeConstraintsForElems	lulesh-others.c	/^void CalcTimeConstraintsForElems() {$/;"	f
 CalcVelocityForNodes	lulesh-others.c	/^void CalcVelocityForNodes(const Real_t dt, const Real_t u_cut)$/;"	f
 CalcVolumeForceForElems	lulesh-others.c	/^void CalcVolumeForceForElems()$/;"	f
-ETA_M	lulesh.h	241;"	d
-ETA_M_FREE	lulesh.h	243;"	d
-ETA_M_SYMM	lulesh.h	242;"	d
-ETA_P	lulesh.h	245;"	d
-ETA_P_FREE	lulesh.h	247;"	d
-ETA_P_SYMM	lulesh.h	246;"	d
+ETA_M	lulesh.h	251;"	d
+ETA_M_FREE	lulesh.h	253;"	d
+ETA_M_SYMM	lulesh.h	252;"	d
+ETA_P	lulesh.h	255;"	d
+ETA_P_FREE	lulesh.h	257;"	d
+ETA_P_SYMM	lulesh.h	256;"	d
 EvalEOSForElems	lulesh-others.c	/^void EvalEOSForElems(Real_t *vnewc, Index_t length)$/;"	f
 FABS	lulesh.h	117;"	d
 Index_t	lulesh.h	/^typedef int    Index_t ; \/* array subscript and loop index *\/$/;"	t
 InitStressTermsForElems	lulesh-others.c	/^void InitStressTermsForElems(Index_t numElem, $/;"	f
 Int_t	lulesh.h	/^typedef int    Int_t ;   \/* integer representation *\/$/;"	t
-IntegrateStressForElems	lulesh-others.c	/^void IntegrateStressForElems( Index_t numElem,$/;"	f
+IntegrateStressForElems	lulesh-body.c	/^void IntegrateStressForElems( Index_t numElem,$/;"	f
 LULESH_SHOW_PROGRESS	lulesh-body.c	71;"	d	file:
 LagrangeElements	lulesh-others.c	/^void LagrangeElements()$/;"	f
 LagrangeLeapFrog	lulesh-others.c	/^void LagrangeLeapFrog()$/;"	f
@@ -62,28 +57,28 @@ QStopError	lulesh.h	/^enum { VolumeError = -1, QStopError = -2 } ;$/;"	e	enum:__
 Real_t	lulesh.h	/^typedef real8  Real_t ;  \/* floating point representation *\/$/;"	t
 Release	lulesh-others.c	/^void Release(Real_t **ptr)$/;"	f
 SQRT	lulesh.h	115;"	d
-SUM4	lulesh-others.c	1084;"	d	file:
-SUM4	lulesh-others.c	1231;"	d	file:
-SumElemFaceNormal	lulesh-others.c	/^void SumElemFaceNormal(Real_t *normalX0, Real_t *normalY0, Real_t *normalZ0,$/;"	f
-SumElemStressesToNodeForces	lulesh-others.c	/^void SumElemStressesToNodeForces( const Real_t B[][8],$/;"	f
-TRIPLE_PRODUCT	lulesh-others.c	796;"	d	file:
-TRIPLE_PRODUCT	lulesh-others.c	809;"	d	file:
+SUM4	lulesh-body.c	215;"	d	file:
+SUM4	lulesh-body.c	76;"	d	file:
+TRIPLE_PRODUCT	lulesh-body.c	346;"	d	file:
+TRIPLE_PRODUCT	lulesh-body.c	359;"	d	file:
+TRIPLE_PRODUCT	lulesh-others.c	458;"	d	file:
+TRIPLE_PRODUCT	lulesh-others.c	471;"	d	file:
 TimeIncrement	lulesh-others.c	/^void TimeIncrement()$/;"	f
 UpdateVolumesForElems	lulesh-others.c	/^void UpdateVolumesForElems()$/;"	f
-VoluDer	lulesh-body.c	/^void VoluDer(const Real_t x0, const Real_t x1, const Real_t x2,$/;"	f
 VolumeError	lulesh.h	/^enum { VolumeError = -1, QStopError = -2 } ;$/;"	e	enum:__anon1
-XI_M	lulesh.h	233;"	d
-XI_M_FREE	lulesh.h	235;"	d
-XI_M_SYMM	lulesh.h	234;"	d
-XI_P	lulesh.h	237;"	d
-XI_P_FREE	lulesh.h	239;"	d
-XI_P_SYMM	lulesh.h	238;"	d
-ZETA_M	lulesh.h	249;"	d
-ZETA_M_FREE	lulesh.h	251;"	d
-ZETA_M_SYMM	lulesh.h	250;"	d
-ZETA_P	lulesh.h	253;"	d
-ZETA_P_FREE	lulesh.h	255;"	d
-ZETA_P_SYMM	lulesh.h	254;"	d
+WW	lulesh.h	3;"	d
+XI_M	lulesh.h	243;"	d
+XI_M_FREE	lulesh.h	245;"	d
+XI_M_SYMM	lulesh.h	244;"	d
+XI_P	lulesh.h	247;"	d
+XI_P_FREE	lulesh.h	249;"	d
+XI_P_SYMM	lulesh.h	248;"	d
+ZETA_M	lulesh.h	259;"	d
+ZETA_M_FREE	lulesh.h	261;"	d
+ZETA_M_SYMM	lulesh.h	260;"	d
+ZETA_P	lulesh.h	263;"	d
+ZETA_P_FREE	lulesh.h	265;"	d
+ZETA_P_SYMM	lulesh.h	264;"	d
 arealg	lulesh.h	62;"	d
 cycle	lulesh.h	93;"	d
 deltatime	lulesh.h	67;"	d
@@ -100,6 +95,9 @@ dtcourant	lulesh.h	90;"	d
 dtfixed	lulesh.h	65;"	d
 dthydro	lulesh.h	91;"	d
 dtmax	lulesh.h	92;"	d
+dvdx	lulesh.h	/^Real_t dvdx[edgeElems][edgeElems][edgeElems][8];$/;"	v
+dvdy	lulesh.h	/^Real_t dvdy[edgeElems][edgeElems][edgeElems][8];$/;"	v
+dvdz	lulesh.h	/^Real_t dvdz[edgeElems][edgeElems][edgeElems][8];$/;"	v
 dvovmax	lulesh.h	88;"	d
 dxx	lulesh.h	43;"	d
 dyy	lulesh.h	44;"	d
@@ -199,13 +197,13 @@ m_vdov	lulesh.h	/^   Real_t * m_vdov ;  \/* volume derivative over volume *\/$/;
 m_vnew	lulesh.h	/^   Real_t * m_vnew ;  \/* new relative volume -- temporary *\/$/;"	v
 m_volo	lulesh.h	/^   Real_t * m_volo ;  \/* reference volume *\/$/;"	v
 m_x	lulesh.h	/^Real_t m_x[edgeNodes][edgeNodes][edgeNodes];$/;"	v
-m_xd	lulesh.h	/^   Real_t * m_xd ; \/* velocities *\/$/;"	v
+m_xd	lulesh.h	/^Real_t m_xd[edgeNodes][edgeNodes][edgeNodes];$/;"	v
 m_xdd	lulesh.h	/^   Real_t * m_xdd ; \/* accelerations *\/$/;"	v
 m_y	lulesh.h	/^Real_t m_y[edgeNodes][edgeNodes][edgeNodes];$/;"	v
-m_yd	lulesh.h	/^   Real_t * m_yd ;$/;"	v
+m_yd	lulesh.h	/^Real_t m_yd[edgeNodes][edgeNodes][edgeNodes];$/;"	v
 m_ydd	lulesh.h	/^   Real_t * m_ydd ;$/;"	v
 m_z	lulesh.h	/^Real_t m_z[edgeNodes][edgeNodes][edgeNodes];$/;"	v
-m_zd	lulesh.h	/^   Real_t * m_zd ;$/;"	v
+m_zd	lulesh.h	/^Real_t m_zd[edgeNodes][edgeNodes][edgeNodes];$/;"	v
 m_zdd	lulesh.h	/^   Real_t * m_zdd ;$/;"	v
 main	lulesh-body.c	/^int main(int argc, char *argv[])$/;"	f
 matElemlist	lulesh.h	33;"	d
@@ -249,11 +247,14 @@ vdov	lulesh.h	61;"	d
 vnew	lulesh.h	59;"	d
 volo	lulesh.h	58;"	d
 x	lulesh.h	5;"	d
+x8n	lulesh.h	/^Real_t x8n[edgeElems][edgeElems][edgeElems][8];$/;"	v
 xd	lulesh.h	9;"	d
 xdd	lulesh.h	13;"	d
 y	lulesh.h	6;"	d
+y8n	lulesh.h	/^Real_t y8n[edgeElems][edgeElems][edgeElems][8];$/;"	v
 yd	lulesh.h	10;"	d
 ydd	lulesh.h	14;"	d
 z	lulesh.h	7;"	d
+z8n	lulesh.h	/^Real_t z8n[edgeElems][edgeElems][edgeElems][8];$/;"	v
 zd	lulesh.h	11;"	d
 zdd	lulesh.h	15;"	d

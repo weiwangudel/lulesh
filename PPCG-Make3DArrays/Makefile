@@ -7,3 +7,7 @@ PPCG:
 	 ppcg  --target=c --openmp --live-range-analysis --dump-schedule  lulesh-body.c   -o ppcg_lulesh-body.c
 PPCG-3:
 	gcc -g -lm -std=c99 ppcg_lulesh-body.c -O3 -lm
+cscope:
+	cscope -b -q -k -R 
+tags:
+	ctags *.c *.h
