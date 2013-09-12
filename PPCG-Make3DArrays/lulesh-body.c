@@ -91,7 +91,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
      Real_t zd_local[8] ;
      Real_t detJ = (0.0) ;
 
-    Real_t volume ;
+    Real_t volume;
     Real_t relativeVolume ;
 
     x_local[0] = m_x[i][j][k];                                                    
@@ -202,14 +202,6 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
                                                   z_local,
                                                   volume);
     
-    //const Index_t *elemToNode = nodelist(WW);
-    //for( Index_t lnode=0 ; lnode<8 ; ++lnode )
-    //{
-    //  Index_t gnode = elemToNode[lnode];
-    //  xd_local[lnode] = xd(gnode);
-    //  yd_local[lnode] = yd(gnode);
-    //  zd_local[lnode] = zd(gnode);
-    //}
     xd_local[0] = m_xd[i][j][k];                                                    
     xd_local[1] = m_xd[i][j][k+1];                                                  
     xd_local[2] = m_xd[i][j+1][k+1];                                                
@@ -246,15 +238,137 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
        z_local[j] -= dt2 * zd_local[j];
     }
 
-    CalcElemShapeFunctionDerivatives( x_local,
-                                          y_local,
-                                          z_local,
-                                          B, &detJ );
+    //CalcElemShapeFunctionDerivatives( x_local,
+    //                                      y_local,
+    //                                      z_local,
+    //                                      B, &detJ );
+{
+  Real_t fjxxi; Real_t fjxet; Real_t fjxze;
+  Real_t fjyxi; Real_t fjyet; Real_t fjyze;
+  Real_t fjzxi; Real_t fjzet; Real_t fjzze;
+  Real_t cjxxi; Real_t cjxet; Real_t cjxze;
+  Real_t cjyxi; Real_t cjyet; Real_t cjyze;
+  Real_t cjzxi; Real_t cjzet; Real_t cjzze;
 
-    CalcElemVelocityGrandient( xd_local,
-                               yd_local,
-                               zd_local,
-                               B, detJ, D );
+  fjxxi = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
+  fjxet = .125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
+  fjxze = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) );
+
+  fjyxi = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
+  fjyet = .125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
+  fjyze = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) );
+
+  fjzxi = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
+  fjzet = .125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
+  fjzze = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) );
+
+  /* compute cofactors */
+  cjxxi =    (fjyet * fjzze) - (fjzet * fjyze);
+  cjxet =  - (fjyxi * fjzze) + (fjzxi * fjyze);
+  cjxze =    (fjyxi * fjzet) - (fjzxi * fjyet);
+
+  cjyxi =  - (fjxet * fjzze) + (fjzet * fjxze);
+  cjyet =    (fjxxi * fjzze) - (fjzxi * fjxze);
+  cjyze =  - (fjxxi * fjzet) + (fjzxi * fjxet);
+
+  cjzxi =    (fjxet * fjyze) - (fjyet * fjxze);
+  cjzet =  - (fjxxi * fjyze) + (fjyxi * fjxze);
+  cjzze =    (fjxxi * fjyet) - (fjyxi * fjxet);
+
+  /* calculate partials :
+     this need only be done for l = 0,1,2,3   since , by symmetry ,
+     (6,7,4,5) = - (0,1,2,3) .
+  */
+  B[0][0] =   -  cjxxi  -  cjxet  -  cjxze;
+  B[0][1] =      cjxxi  -  cjxet  -  cjxze;
+  B[0][2] =      cjxxi  +  cjxet  -  cjxze;
+  B[0][3] =   -  cjxxi  +  cjxet  -  cjxze;
+  B[0][4] = -B[0][2];
+  B[0][5] = -B[0][3];
+  B[0][6] = -B[0][0];
+  B[0][7] = -B[0][1];
+
+  B[1][0] =   -  cjyxi  -  cjyet  -  cjyze;
+  B[1][1] =      cjyxi  -  cjyet  -  cjyze;
+  B[1][2] =      cjyxi  +  cjyet  -  cjyze;
+  B[1][3] =   -  cjyxi  +  cjyet  -  cjyze;
+  B[1][4] = -B[1][2];
+  B[1][5] = -B[1][3];
+  B[1][6] = -B[1][0];
+  B[1][7] = -B[1][1];
+
+  B[2][0] =   -  cjzxi  -  cjzet  -  cjzze;
+  B[2][1] =      cjzxi  -  cjzet  -  cjzze;
+  B[2][2] =      cjzxi  +  cjzet  -  cjzze;
+  B[2][3] =   -  cjzxi  +  cjzet  -  cjzze;
+  B[2][4] = -B[2][2];
+  B[2][5] = -B[2][3];
+  B[2][6] = -B[2][0];
+  B[2][7] = -B[2][1];
+
+  /* calculate jacobian determinant (volume) */
+  detJ = (8.) * ( fjxet * cjxet + fjyet * cjyet + fjzet * cjzet);
+}
+
+    //CalcElemVelocityGrandient( xd_local,
+    //                           yd_local,
+    //                           zd_local,
+    //                           B, detJ, D );
+{
+  const Real_t inv_detJ = (1.0) / detJ ;
+  Real_t dyddx;Real_t dxddy;Real_t dzddx;Real_t dxddz;Real_t dzddy;Real_t dyddz;
+  const Real_t* const pfx = B[0];
+  const Real_t* const pfy = B[1];
+  const Real_t* const pfz = B[2];
+
+  D[0] = inv_detJ * ( pfx[0] * (xd_local[0]-xd_local[6])
+                    + pfx[1] * (xd_local[1]-xd_local[7])
+                    + pfx[2] * (xd_local[2]-xd_local[4])
+                    + pfx[3] * (xd_local[3]-xd_local[5]) );
+
+  D[1] = inv_detJ * ( pfy[0] * (yd_local[0]-yd_local[6])
+                    + pfy[1] * (yd_local[1]-yd_local[7])
+                    + pfy[2] * (yd_local[2]-yd_local[4])
+                    + pfy[3] * (yd_local[3]-yd_local[5]) );
+
+  D[2] = inv_detJ * ( pfz[0] * (zd_local[0]-zd_local[6])
+                    + pfz[1] * (zd_local[1]-zd_local[7])
+                    + pfz[2] * (zd_local[2]-zd_local[4])
+                    + pfz[3] * (zd_local[3]-zd_local[5]) );
+
+  dyddx  = inv_detJ * ( pfx[0] * (yd_local[0]-yd_local[6])
+                      + pfx[1] * (yd_local[1]-yd_local[7])
+                      + pfx[2] * (yd_local[2]-yd_local[4])
+                      + pfx[3] * (yd_local[3]-yd_local[5]) );
+
+  dxddy  = inv_detJ * ( pfy[0] * (xd_local[0]-xd_local[6])
+                      + pfy[1] * (xd_local[1]-xd_local[7])
+                      + pfy[2] * (xd_local[2]-xd_local[4])
+                      + pfy[3] * (xd_local[3]-xd_local[5]) );
+
+  dzddx  = inv_detJ * ( pfx[0] * (zd_local[0]-zd_local[6])
+                      + pfx[1] * (zd_local[1]-zd_local[7])
+                      + pfx[2] * (zd_local[2]-zd_local[4])
+                      + pfx[3] * (zd_local[3]-zd_local[5]) );
+
+  dxddz  = inv_detJ * ( pfz[0] * (xd_local[0]-xd_local[6])
+                      + pfz[1] * (xd_local[1]-xd_local[7])
+                      + pfz[2] * (xd_local[2]-xd_local[4])
+                      + pfz[3] * (xd_local[3]-xd_local[5]) );
+
+  dzddy  = inv_detJ * ( pfy[0] * (zd_local[0]-zd_local[6])
+                      + pfy[1] * (zd_local[1]-zd_local[7])
+                      + pfy[2] * (zd_local[2]-zd_local[4])
+                      + pfy[3] * (zd_local[3]-zd_local[5]) );
+
+  dyddz  = inv_detJ * ( pfz[0] * (yd_local[0]-yd_local[6])
+                      + pfz[1] * (yd_local[1]-yd_local[7])
+                      + pfz[2] * (yd_local[2]-yd_local[4])
+                      + pfz[3] * (yd_local[3]-yd_local[5]) );
+  D[5]  = ( .5) * ( dxddy + dyddx );
+  D[4]  = ( .5) * ( dxddz + dzddx );
+  D[3]  = ( .5) * ( dzddy + dyddz );
+}
 
     // put velocity gradient quantities into their global arrays.
     dxx((WW)) = D[0];
