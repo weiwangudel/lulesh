@@ -8,6 +8,6 @@ PPCG:
 PPCG-3:
 	gcc -g -lm -std=c99 ppcg_lulesh-body.c -O3 -lm
 cscope:
-	cscope -b -q -k -R 
-tags:
+	cscope -b -q -k  
+tag:
 	ctags *.c *.h
