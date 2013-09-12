@@ -269,3 +269,4 @@ void IntegrateStressForElems(
      Index_t numElem, Real_t *sigxx, Real_t *sigyy, Real_t *sigzz, Real_t *determ);
 void CalcKinematicsForElems( Index_t numElem, Real_t dt );
 void CalcAccelerationForNodes();
+void CalcMonotonicQGradientsForElems();

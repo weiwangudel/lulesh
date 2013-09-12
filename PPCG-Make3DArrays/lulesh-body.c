@@ -70,12 +70,158 @@ Additional BSD Notice
 
 #define LULESH_SHOW_PROGRESS 0 
 
+
+void CalcMonotonicQGradientsForElems()
+{
+#define SUM4(a,b,c,d) (a + b + c + d)
+   Index_t numElem = numElem() ;
+
+   Index_t i,j,k;
+//#pragma omp parallel for firstprivate(numElem)
+   #pragma scop
+   for (i = 0 ; i < edgeElems ; ++i ) 
+   for (j = 0 ; j < edgeElems ; ++j ) 
+   for (k = 0 ; k < edgeElems ; ++k ) {
+      const Real_t ptiny = (1.e-36) ;
+      Real_t ax; Real_t ay; Real_t az;
+      Real_t dxv; Real_t dyv; Real_t dzv;
+
+
+      /* x,y,z */
+      Real_t x0 = m_x[i][j][k];                                                    
+      Real_t x1 = m_x[i][j][k+1];                                                  
+      Real_t x2 = m_x[i][j+1][k+1];                                                
+      Real_t x3 = m_x[i][j+1][k];                                                  
+      Real_t x4 = m_x[i+1][j][k];                                                  
+      Real_t x5 = m_x[i+1][j][k+1];                                                
+      Real_t x6 = m_x[i+1][j+1][k+1];                                              
+      Real_t x7 = m_x[i+1][j+1][k];                                                
+
+      Real_t y0 = m_y[i][j][k];                                                    
+      Real_t y1 = m_y[i][j][k+1];                                                  
+      Real_t y2 = m_y[i][j+1][k+1];                                                
+      Real_t y3 = m_y[i][j+1][k];                                                  
+      Real_t y4 = m_y[i+1][j][k];                                                  
+      Real_t y5 = m_y[i+1][j][k+1];                                                
+      Real_t y6 = m_y[i+1][j+1][k+1];                                              
+      Real_t y7 = m_y[i+1][j+1][k];                                                
+
+      Real_t z0 = m_z[i][j][k];                                                    
+      Real_t z1 = m_z[i][j][k+1];                                                  
+      Real_t z2 = m_z[i][j+1][k+1];                                                
+      Real_t z3 = m_z[i][j+1][k];                                                  
+      Real_t z4 = m_z[i+1][j][k];                                                  
+      Real_t z5 = m_z[i+1][j][k+1];                                                
+      Real_t z6 = m_z[i+1][j+1][k+1];                                              
+      Real_t z7 = m_z[i+1][j+1][k];             
+
+
+      Real_t xv0 = m_xd[i][j][k];         
+      Real_t xv1 = m_xd[i][j][k+1];       
+      Real_t xv2 = m_xd[i][j+1][k+1];     
+      Real_t xv3 = m_xd[i][j+1][k];       
+      Real_t xv4 = m_xd[i+1][j][k];       
+      Real_t xv5 = m_xd[i+1][j][k+1];     
+      Real_t xv6 = m_xd[i+1][j+1][k+1];   
+      Real_t xv7 = m_xd[i+1][j+1][k];     
+                                        
+      Real_t yv0 = m_yd[i][j][k];         
+      Real_t yv1 = m_yd[i][j][k+1];       
+      Real_t yv2 = m_yd[i][j+1][k+1];     
+      Real_t yv3 = m_yd[i][j+1][k];       
+      Real_t yv4 = m_yd[i+1][j][k];       
+      Real_t yv5 = m_yd[i+1][j][k+1];     
+      Real_t yv6 = m_yd[i+1][j+1][k+1];   
+      Real_t yv7 = m_yd[i+1][j+1][k];     
+                                        
+      Real_t zv0 = m_zd[i][j][k];         
+      Real_t zv1 = m_zd[i][j][k+1];       
+      Real_t zv2 = m_zd[i][j+1][k+1];     
+      Real_t zv3 = m_zd[i][j+1][k];       
+      Real_t zv4 = m_zd[i+1][j][k];       
+      Real_t zv5 = m_zd[i+1][j][k+1];     
+      Real_t zv6 = m_zd[i+1][j+1][k+1];   
+      Real_t zv7 = m_zd[i+1][j+1][k];     
+
+      Real_t vol = volo(WW)*vnew(WW) ;
+      Real_t norm = (1.0) / ( vol + ptiny ) ;
+
+      Real_t dxj = (-0.25)*(SUM4(x0,x1,x5,x4) - SUM4(x3,x2,x6,x7)) ;
+      Real_t dyj = (-0.25)*(SUM4(y0,y1,y5,y4) - SUM4(y3,y2,y6,y7)) ;
+      Real_t dzj = (-0.25)*(SUM4(z0,z1,z5,z4) - SUM4(z3,z2,z6,z7)) ;
+
+      Real_t dxi = ( 0.25)*(SUM4(x1,x2,x6,x5) - SUM4(x0,x3,x7,x4)) ;
+      Real_t dyi = ( 0.25)*(SUM4(y1,y2,y6,y5) - SUM4(y0,y3,y7,y4)) ;
+      Real_t dzi = ( 0.25)*(SUM4(z1,z2,z6,z5) - SUM4(z0,z3,z7,z4)) ;
+
+      Real_t dxk = ( 0.25)*(SUM4(x4,x5,x6,x7) - SUM4(x0,x1,x2,x3)) ;
+      Real_t dyk = ( 0.25)*(SUM4(y4,y5,y6,y7) - SUM4(y0,y1,y2,y3)) ;
+      Real_t dzk = ( 0.25)*(SUM4(z4,z5,z6,z7) - SUM4(z0,z1,z2,z3)) ;
+
+      /* find delvk and delxk ( i cross j ) */
+
+      ax = dyi*dzj - dzi*dyj ;
+      ay = dzi*dxj - dxi*dzj ;
+      az = dxi*dyj - dyi*dxj ;
+
+      delx_zeta(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+
+      ax *= norm ;
+      ay *= norm ;
+      az *= norm ;
+
+      dxv = (0.25)*(SUM4(xv4,xv5,xv6,xv7) - SUM4(xv0,xv1,xv2,xv3)) ;
+      dyv = (0.25)*(SUM4(yv4,yv5,yv6,yv7) - SUM4(yv0,yv1,yv2,yv3)) ;
+      dzv = (0.25)*(SUM4(zv4,zv5,zv6,zv7) - SUM4(zv0,zv1,zv2,zv3)) ;
+
+      delv_zeta(WW) = ax*dxv + ay*dyv + az*dzv ;
+
+      /* find delxi and delvi ( j cross k ) */
+
+      ax = dyj*dzk - dzj*dyk ;
+      ay = dzj*dxk - dxj*dzk ;
+      az = dxj*dyk - dyj*dxk ;
+
+      delx_xi(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+
+      ax *= norm ;
+      ay *= norm ;
+      az *= norm ;
+
+      dxv = (0.25)*(SUM4(xv1,xv2,xv6,xv5) - SUM4(xv0,xv3,xv7,xv4)) ;
+      dyv = (0.25)*(SUM4(yv1,yv2,yv6,yv5) - SUM4(yv0,yv3,yv7,yv4)) ;
+      dzv = (0.25)*(SUM4(zv1,zv2,zv6,zv5) - SUM4(zv0,zv3,zv7,zv4)) ;
+
+      delv_xi(WW) = ax*dxv + ay*dyv + az*dzv ;
+
+      /* find delxj and delvj ( k cross i ) */
+
+      ax = dyk*dzi - dzk*dyi ;
+      ay = dzk*dxi - dxk*dzi ;
+      az = dxk*dyi - dyk*dxi ;
+
+      delx_eta(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+
+      ax *= norm ;
+      ay *= norm ;
+      az *= norm ;
+
+      dxv = (-0.25)*(SUM4(xv0,xv1,xv5,xv4) - SUM4(xv3,xv2,xv6,xv7)) ;
+      dyv = (-0.25)*(SUM4(yv0,yv1,yv5,yv4) - SUM4(yv3,yv2,yv6,yv7)) ;
+      dzv = (-0.25)*(SUM4(zv0,zv1,zv5,zv4) - SUM4(zv3,zv2,zv6,zv7)) ;
+
+      delv_eta(WW) = ax*dxv + ay*dyv + az*dzv ;
+   }
+#undef SUM4
+   #pragma endscop
+}
+
 void CalcAccelerationForNodes()
 {
    Index_t numNode = numNode() ;
    Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numNode)
-   #pragma scop
+   //#pragma scop
    for (i = 0; i < edgeNodes; ++i) 
      for (j = 0; j < edgeNodes; ++j) 
        for (k = 0; k < edgeNodes; ++k) {
@@ -83,7 +229,7 @@ void CalcAccelerationForNodes()
       ydd(i*edgeNodes*edgeNodes+j*edgeNodes+k) = fy(i*edgeNodes*edgeNodes+j*edgeNodes+k) / nodalMass(i*edgeNodes*edgeNodes+j*edgeNodes+k);
       zdd(i*edgeNodes*edgeNodes+j*edgeNodes+k) = fz(i*edgeNodes*edgeNodes+j*edgeNodes+k) / nodalMass(i*edgeNodes*edgeNodes+j*edgeNodes+k);
    }
-   #pragma endscop
+   //#pragma endscop
 }
 
 void CalcKinematicsForElems( Index_t numElem, Real_t dt )
@@ -108,7 +254,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   Real_t inv_detJ;
   Real_t dyddx;Real_t dxddy;Real_t dzddx;Real_t dxddz;Real_t dzddy;Real_t dyddz;
 //#pragma omp parallel for firstprivate(numElem, dt)
-  #pragma scop
+  //#pragma scop
   for( i=0 ; i<edgeElems ; ++i )
     for( j=0 ; j<edgeElems ; ++j )
       for( k=0 ; k<edgeElems ; ++k )
@@ -388,7 +534,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     dyy((WW)) = D[1];
     dzz((WW)) = D[2];
   }
-  #pragma endscop
+  //#pragma endscop
 }
 
 void IntegrateStressForElems( Index_t numElem,
@@ -413,7 +559,7 @@ void IntegrateStressForElems( Index_t numElem,
 //Ori#pragma omp parallel for firstprivate(numElem)
   //for( k=0 ; k<numElem ; ++k )
 
-  #pragma scop
+//  #pragma scop
   for (i=0; i<edgeElems; ++i)
     for (j=0; j<edgeElems; ++j)
       for (k=0; k<edgeElems; ++k)
@@ -656,7 +802,7 @@ void IntegrateStressForElems( Index_t numElem,
     }
 
   }
-  #pragma endscop
+//  #pragma endscop
 
   {
      Index_t numNode = numNode() ;
@@ -761,7 +907,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 
    Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numElem, hourg) 
-   #pragma scop
+//   #pragma scop
    for (i=0; i<edgeElems; ++i)                  //i.e. plane
       for (j=0; j<edgeElems; ++j)               //i.e. row
         for (k=0; k<edgeElems; ++k)   {           //i.e. col
@@ -1067,7 +1213,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       fz_elem[i3+7] = hgfz[7];
 
    }
-  #pragma endscop
+//  #pragma endscop
 
   {
      Index_t numNode = numNode() ;
@@ -1109,7 +1255,7 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
    Index_t k;
    Real_t  x1[8],  y1[8],  z1[8] ;
    Real_t pfx[8], pfy[8], pfz[8] ;
-   #pragma scop
+//   #pragma scop
    for (i=0; i<edgeElems; ++i) {                 //i.e. plane
       for (j=0; j<edgeElems; ++j) {              //i.e. row
         for (k=0; k<edgeElems; ++k)  {           //i.e. col
@@ -1313,7 +1459,7 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
    } //k
   } //j
  } //i
- #pragma endscop
+// #pragma endscop
 
    if ( hgcoef > 0.0 ) {
       CalcFBHourglassForceForElems(determ,x8n,y8n,z8n,dvdx,dvdy,dvdz,hgcoef) ;
