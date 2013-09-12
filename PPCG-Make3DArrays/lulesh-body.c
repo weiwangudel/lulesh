@@ -317,54 +317,51 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 {
   const Real_t inv_detJ = (1.0) / detJ ;
   Real_t dyddx;Real_t dxddy;Real_t dzddx;Real_t dxddz;Real_t dzddy;Real_t dyddz;
-  const Real_t* const pfx = B[0];
-  const Real_t* const pfy = B[1];
-  const Real_t* const pfz = B[2];
 
-  D[0] = inv_detJ * ( pfx[0] * (xd_local[0]-xd_local[6])
-                    + pfx[1] * (xd_local[1]-xd_local[7])
-                    + pfx[2] * (xd_local[2]-xd_local[4])
-                    + pfx[3] * (xd_local[3]-xd_local[5]) );
+  D[0] = inv_detJ * ( B[0][0] * (xd_local[0]-xd_local[6])
+                    + B[0][1] * (xd_local[1]-xd_local[7])
+                    + B[0][2] * (xd_local[2]-xd_local[4])
+                    + B[0][3] * (xd_local[3]-xd_local[5]) );
 
-  D[1] = inv_detJ * ( pfy[0] * (yd_local[0]-yd_local[6])
-                    + pfy[1] * (yd_local[1]-yd_local[7])
-                    + pfy[2] * (yd_local[2]-yd_local[4])
-                    + pfy[3] * (yd_local[3]-yd_local[5]) );
+  D[1] = inv_detJ * ( B[1][0] * (yd_local[0]-yd_local[6])
+                    + B[1][1] * (yd_local[1]-yd_local[7])
+                    + B[1][2] * (yd_local[2]-yd_local[4])
+                    + B[1][3] * (yd_local[3]-yd_local[5]) );
 
-  D[2] = inv_detJ * ( pfz[0] * (zd_local[0]-zd_local[6])
-                    + pfz[1] * (zd_local[1]-zd_local[7])
-                    + pfz[2] * (zd_local[2]-zd_local[4])
-                    + pfz[3] * (zd_local[3]-zd_local[5]) );
+  D[2] = inv_detJ * ( B[2][0] * (zd_local[0]-zd_local[6])
+                    + B[2][1] * (zd_local[1]-zd_local[7])
+                    + B[2][2] * (zd_local[2]-zd_local[4])
+                    + B[2][3] * (zd_local[3]-zd_local[5]) );
 
-  dyddx  = inv_detJ * ( pfx[0] * (yd_local[0]-yd_local[6])
-                      + pfx[1] * (yd_local[1]-yd_local[7])
-                      + pfx[2] * (yd_local[2]-yd_local[4])
-                      + pfx[3] * (yd_local[3]-yd_local[5]) );
+  dyddx  = inv_detJ * ( B[0][0] * (yd_local[0]-yd_local[6])
+                      + B[0][1] * (yd_local[1]-yd_local[7])
+                      + B[0][2] * (yd_local[2]-yd_local[4])
+                      + B[0][3] * (yd_local[3]-yd_local[5]) );
 
-  dxddy  = inv_detJ * ( pfy[0] * (xd_local[0]-xd_local[6])
-                      + pfy[1] * (xd_local[1]-xd_local[7])
-                      + pfy[2] * (xd_local[2]-xd_local[4])
-                      + pfy[3] * (xd_local[3]-xd_local[5]) );
+  dxddy  = inv_detJ * ( B[1][0] * (xd_local[0]-xd_local[6])
+                      + B[1][1] * (xd_local[1]-xd_local[7])
+                      + B[1][2] * (xd_local[2]-xd_local[4])
+                      + B[1][3] * (xd_local[3]-xd_local[5]) );
 
-  dzddx  = inv_detJ * ( pfx[0] * (zd_local[0]-zd_local[6])
-                      + pfx[1] * (zd_local[1]-zd_local[7])
-                      + pfx[2] * (zd_local[2]-zd_local[4])
-                      + pfx[3] * (zd_local[3]-zd_local[5]) );
+  dzddx  = inv_detJ * ( B[0][0] * (zd_local[0]-zd_local[6])
+                      + B[0][1] * (zd_local[1]-zd_local[7])
+                      + B[0][2] * (zd_local[2]-zd_local[4])
+                      + B[0][3] * (zd_local[3]-zd_local[5]) );
 
-  dxddz  = inv_detJ * ( pfz[0] * (xd_local[0]-xd_local[6])
-                      + pfz[1] * (xd_local[1]-xd_local[7])
-                      + pfz[2] * (xd_local[2]-xd_local[4])
-                      + pfz[3] * (xd_local[3]-xd_local[5]) );
+  dxddz  = inv_detJ * ( B[2][0] * (xd_local[0]-xd_local[6])
+                      + B[2][1] * (xd_local[1]-xd_local[7])
+                      + B[2][2] * (xd_local[2]-xd_local[4])
+                      + B[2][3] * (xd_local[3]-xd_local[5]) );
 
-  dzddy  = inv_detJ * ( pfy[0] * (zd_local[0]-zd_local[6])
-                      + pfy[1] * (zd_local[1]-zd_local[7])
-                      + pfy[2] * (zd_local[2]-zd_local[4])
-                      + pfy[3] * (zd_local[3]-zd_local[5]) );
+  dzddy  = inv_detJ * ( B[1][0] * (zd_local[0]-zd_local[6])
+                      + B[1][1] * (zd_local[1]-zd_local[7])
+                      + B[1][2] * (zd_local[2]-zd_local[4])
+                      + B[1][3] * (zd_local[3]-zd_local[5]) );
 
-  dyddz  = inv_detJ * ( pfz[0] * (yd_local[0]-yd_local[6])
-                      + pfz[1] * (yd_local[1]-yd_local[7])
-                      + pfz[2] * (yd_local[2]-yd_local[4])
-                      + pfz[3] * (yd_local[3]-yd_local[5]) );
+  dyddz  = inv_detJ * ( B[2][0] * (yd_local[0]-yd_local[6])
+                      + B[2][1] * (yd_local[1]-yd_local[7])
+                      + B[2][2] * (yd_local[2]-yd_local[4])
+                      + B[2][3] * (yd_local[3]-yd_local[5]) );
   D[5]  = ( .5) * ( dxddy + dyddx );
   D[4]  = ( .5) * ( dxddz + dzddx );
   D[3]  = ( .5) * ( dzddy + dyddz );
