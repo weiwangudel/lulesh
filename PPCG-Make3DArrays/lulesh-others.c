@@ -541,20 +541,6 @@ void CalcVolumeForceForElems()
 }
 
 
-void CalcAccelerationForNodes()
-{
-   Index_t numNode = numNode() ;
-   Index_t i;
-//#pragma omp parallel for firstprivate(numNode)
-   for (i = 0; i < numNode; ++i) {
-      xdd(i) = fx(i) / nodalMass(i);
-      ydd(i) = fy(i) / nodalMass(i);
-      zdd(i) = fz(i) / nodalMass(i);
-   }
-}
-
-
-
 void ApplyAccelerationBoundaryConditionsForNodes()
 {
   Index_t numNodeBC = (sizeX()+1)*(sizeX()+1) ;

@@ -1,4 +1,4 @@
-#define edgeElems  45
+#define edgeElems  45 
 #define edgeNodes  46 
 #define WW (i*edgeElems*edgeElems+j*edgeElems+k)                                 
 
@@ -268,3 +268,4 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef);
 void IntegrateStressForElems(
      Index_t numElem, Real_t *sigxx, Real_t *sigyy, Real_t *sigzz, Real_t *determ);
 void CalcKinematicsForElems( Index_t numElem, Real_t dt );
+void CalcAccelerationForNodes();

@@ -70,6 +70,21 @@ Additional BSD Notice
 
 #define LULESH_SHOW_PROGRESS 0 
 
+void CalcAccelerationForNodes()
+{
+   Index_t numNode = numNode() ;
+   Index_t i,j,k;
+//#pragma omp parallel for firstprivate(numNode)
+   #pragma scop
+   for (i = 0; i < edgeNodes; ++i) 
+     for (j = 0; j < edgeNodes; ++j) 
+       for (k = 0; k < edgeNodes; ++k) {
+      xdd(i*edgeNodes*edgeNodes+j*edgeNodes+k) = fx(i*edgeNodes*edgeNodes+j*edgeNodes+k) / nodalMass(i*edgeNodes*edgeNodes+j*edgeNodes+k);
+      ydd(i*edgeNodes*edgeNodes+j*edgeNodes+k) = fy(i*edgeNodes*edgeNodes+j*edgeNodes+k) / nodalMass(i*edgeNodes*edgeNodes+j*edgeNodes+k);
+      zdd(i*edgeNodes*edgeNodes+j*edgeNodes+k) = fz(i*edgeNodes*edgeNodes+j*edgeNodes+k) / nodalMass(i*edgeNodes*edgeNodes+j*edgeNodes+k);
+   }
+   #pragma endscop
+}
 
 void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 {
@@ -93,7 +108,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   Real_t inv_detJ;
   Real_t dyddx;Real_t dxddy;Real_t dzddx;Real_t dxddz;Real_t dzddy;Real_t dyddz;
 //#pragma omp parallel for firstprivate(numElem, dt)
-#pragma scop
+  #pragma scop
   for( i=0 ; i<edgeElems ; ++i )
     for( j=0 ; j<edgeElems ; ++j )
       for( k=0 ; k<edgeElems ; ++k )
@@ -398,7 +413,7 @@ void IntegrateStressForElems( Index_t numElem,
 //Ori#pragma omp parallel for firstprivate(numElem)
   //for( k=0 ; k<numElem ; ++k )
 
-//  #pragma scop
+  #pragma scop
   for (i=0; i<edgeElems; ++i)
     for (j=0; j<edgeElems; ++j)
       for (k=0; k<edgeElems; ++k)
@@ -641,7 +656,7 @@ void IntegrateStressForElems( Index_t numElem,
     }
 
   }
-//  #pragma endscop
+  #pragma endscop
 
   {
      Index_t numNode = numNode() ;
@@ -746,7 +761,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 
    Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numElem, hourg) 
-   //#pragma scop
+   #pragma scop
    for (i=0; i<edgeElems; ++i)                  //i.e. plane
       for (j=0; j<edgeElems; ++j)               //i.e. row
         for (k=0; k<edgeElems; ++k)   {           //i.e. col
@@ -1052,7 +1067,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       fz_elem[i3+7] = hgfz[7];
 
    }
-  //#pragma endscop
+  #pragma endscop
 
   {
      Index_t numNode = numNode() ;
@@ -1094,7 +1109,7 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
    Index_t k;
    Real_t  x1[8],  y1[8],  z1[8] ;
    Real_t pfx[8], pfy[8], pfz[8] ;
-   //#pragma scop
+   #pragma scop
    for (i=0; i<edgeElems; ++i) {                 //i.e. plane
       for (j=0; j<edgeElems; ++j) {              //i.e. row
         for (k=0; k<edgeElems; ++k)  {           //i.e. col
@@ -1298,7 +1313,7 @@ void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
    } //k
   } //j
  } //i
- //#pragma endscop
+ #pragma endscop
 
    if ( hgcoef > 0.0 ) {
       CalcFBHourglassForceForElems(determ,x8n,y8n,z8n,dvdx,dvdy,dvdz,hgcoef) ;
