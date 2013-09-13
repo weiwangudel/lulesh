@@ -1,0 +1,17 @@
+Loop 2 <line-895> - Time 11.226059 Total energy consumed 174.179160 Ave. Power Level 15.515611
+	-------- Loop 2 (sock 1 consumed 174.179160, avg temp 60.026087, final temp 60 ) ------
+Loop 5 <line-1540> - Time 14.958428 Total energy consumed 234.964230 Ave. Power Level 15.707816
+	-------- Loop 5 (sock 1 consumed 234.964230, avg temp 59.815385, final temp 60 ) ------
+Loop 6 <line-1467> - Time 25.258321 Total energy consumed 399.620700 Ave. Power Level 15.821349
+	-------- Loop 6 (sock 1 consumed 399.620700, avg temp 60.206020, final temp 60 ) ------
+Loop 12 <line-2002> - Time 10.705642 Total energy consumed 168.974445 Ave. Power Level 15.783682
+	-------- Loop 12 (sock 1 consumed 168.974445, avg temp 60.327090, final temp 61 ) ------
+Loop 14 <line-2182> - Time 7.553766 Total energy consumed 113.706765 Ave. Power Level 15.052991
+	-------- Loop 14 (sock 1 consumed 113.706765, avg temp 60.159866, final temp 61 ) ------
+Application(EnergyStat) - Time 111.400134 Total energy consumed 1711.039470 Ave. Power Level 15.359402 Final Temperature socket 1 : 60 
+Loop 3 <line-918> - Time 4.302101 Total energy consumed 67.050540 Ave. Power Level 15.585535
+	-------- Loop 3 (sock 1 consumed 67.050540, avg temp 59.408696, final temp 60 ) ------
+Loop 7 <line-1490> - Time 4.226282 Total energy consumed 66.460020 Ave. Power Level 15.725412
+	-------- Loop 7 (sock 1 consumed 66.460020, avg temp 59.615385, final temp 61 ) ------
+Loop 15 <line-2324> - Time 4.082587 Total energy consumed 63.357045 Ave. Power Level 15.518848
+	-------- Loop 15 (sock 1 consumed 63.357045, avg temp 60.264214, final temp 61 ) ------
