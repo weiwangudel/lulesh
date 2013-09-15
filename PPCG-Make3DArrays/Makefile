@@ -6,7 +6,9 @@ PPCG-2:
 PPCG:
 	 ppcg  --target=c --openmp --live-range-analysis --dump-schedule  lulesh-body.c   -o ppcg_lulesh-body.c
 PPCG-3:
-	gcc -g -lm -std=c99 ppcg_lulesh-body.c -O3 -lm
+	gcc -g -lm -std=c99 ppcg_lulesh-body.c -O3 -lm -o ppcg-seq.exe
+PPCG-OMP:
+	gcc -g -lm -std=c99 ppcg_lulesh-body.c -O3 -lm -fopenmp -o ppcg-omp.exe
 cscope:
 	cscope -b -q -k  
 tag:
