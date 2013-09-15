@@ -15,3 +15,13 @@ Loop 7 <line-1490> - Time 4.226282 Total energy consumed 66.460020 Ave. Power Le
 	-------- Loop 7 (sock 1 consumed 66.460020, avg temp 59.615385, final temp 61 ) ------
 Loop 15 <line-2324> - Time 4.082587 Total energy consumed 63.357045 Ave. Power Level 15.518848
 	-------- Loop 15 (sock 1 consumed 63.357045, avg temp 60.264214, final temp 61 ) ------
+================================================
+Loop 2 <line-895> -  IntegrateStressForElems
+Loop 5 <line-1540> - CalcHourglassControlForElems
+Loop 6 <line-1467> - CalcFBHourglassForceForElems
+Loop 12 <line-2002> - CalcKinematicsForElems
+Loop 14 <line-2182> - CalcMonotonicQGradientsForElems
+Application(EnergySt
+Loop 3 <line-918> -  IntegrateStressForElems (*)
+Loop 7 <line-1490> - CalcFBHourglassForceForElems (*)
+Loop 15 <line-2324>  - CalcMonotonicQRegionForElems

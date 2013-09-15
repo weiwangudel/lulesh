@@ -70,7 +70,7 @@ Additional BSD Notice
 
 #define LULESH_SHOW_PROGRESS 0 
 
-
+// This contains a ~5th largest SCoP.
 void CalcMonotonicQGradientsForElems()
 {
     #define SUM4(a,b,c,d) (a + b + c + d)
@@ -187,6 +187,7 @@ void CalcAccelerationForNodes()
    #pragma endscop
 }
 
+// This function contains about the 4th largest SCoP
 void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 {
   // loop over all elements
@@ -492,6 +493,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   //#pragma endscop
 }
 
+//This function contains about the 3rd largest SCoP.
 void IntegrateStressForElems( Index_t numElem,
                               Real_t *sigxx, Real_t *sigyy, Real_t *sigzz,
                               Real_t *determ)
@@ -788,6 +790,7 @@ void IntegrateStressForElems( Index_t numElem,
   Release(&fx_elem) ;
 }
 
+/* This function contains the largest SCOP */
 void CalcFBHourglassForceForElems(Real_t *determ,
             Real_t x8n[edgeElems][edgeElems][edgeElems][8],
             Real_t y8n[edgeElems][edgeElems][edgeElems][8],
@@ -1199,7 +1202,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
   Release(&fx_elem) ;
 }
 
-
+/* This function contains the 2nd largest SCoP */
 void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)
 {
    Index_t numElem = numElem() ;
