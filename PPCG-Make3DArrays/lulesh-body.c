@@ -79,9 +79,6 @@ void CalcMonotonicQGradientsForElems()
     Real_t ax; Real_t ay; Real_t az;
     Real_t dxv; Real_t dyv; Real_t dzv;
     
-    Real_t vol;
-    Real_t norm;
-    
     Real_t dxj;
     Real_t dyj;
     Real_t dzj;
@@ -99,8 +96,6 @@ void CalcMonotonicQGradientsForElems()
    for (i = 0 ; i < edgeElems ; ++i ) 
    for (j = 0 ; j < edgeElems ; ++j ) 
    for (k = 0 ; k < edgeElems ; ++k ) {
-      vol = volo(WW)*vnew(WW) ;
-      norm = (1.0) / ( vol + ptiny ) ;
 
       dxj = (-0.25)*(SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i+1][j][k+1],m_x[i+1][j][k]) - SUM4(m_x[i][j+1][k],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k])) ;
       dyj = (-0.25)*(SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i+1][j][k+1],m_y[i+1][j][k]) - SUM4(m_y[i][j+1][k],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k])) ;
@@ -119,11 +114,11 @@ void CalcMonotonicQGradientsForElems()
       ay = dzi*dxj - dxi*dzj ;
       az = dxi*dyj - dyi*dxj ;
 
-      delx_zeta(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+      delx_zeta(WW) = (volo(WW)*vnew(WW)) / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
-      ax *= norm ;
-      ay *= norm ;
-      az *= norm ;
+      ax *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
+      ay *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
+      az *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
 
       dxv = (0.25)*(SUM4(m_xd[i+1][j][k],m_xd[i+1][j][k+1],m_xd[i+1][j+1][k+1],m_xd[i+1][j+1][k]) - SUM4(m_xd[i][j][k],m_xd[i][j][k+1],m_xd[i][j+1][k+1],m_xd[i][j+1][k])) ;
       dyv = (0.25)*(SUM4(m_yd[i+1][j][k],m_yd[i+1][j][k+1],m_yd[i+1][j+1][k+1],m_yd[i+1][j+1][k]) - SUM4(m_yd[i][j][k],m_yd[i][j][k+1],m_yd[i][j+1][k+1],m_yd[i][j+1][k])) ;
@@ -137,11 +132,11 @@ void CalcMonotonicQGradientsForElems()
       ay = dzj*dxk - dxj*dzk ;
       az = dxj*dyk - dyj*dxk ;
 
-      delx_xi(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+      delx_xi(WW) = (volo(WW)*vnew(WW)) / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
-      ax *= norm ;
-      ay *= norm ;
-      az *= norm ;
+      ax *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
+      ay *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
+      az *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
 
       dxv = (0.25)*(SUM4(m_xd[i][j][k+1],m_xd[i][j+1][k+1],m_xd[i+1][j+1][k+1],m_xd[i+1][j][k+1]) - SUM4(m_xd[i][j][k],m_xd[i][j+1][k],m_xd[i+1][j+1][k],m_xd[i+1][j][k])) ;
       dyv = (0.25)*(SUM4(m_yd[i][j][k+1],m_yd[i][j+1][k+1],m_yd[i+1][j+1][k+1],m_yd[i+1][j][k+1]) - SUM4(m_yd[i][j][k],m_yd[i][j+1][k],m_yd[i+1][j+1][k],m_yd[i+1][j][k])) ;
@@ -155,11 +150,11 @@ void CalcMonotonicQGradientsForElems()
       ay = dzk*dxi - dxk*dzi ;
       az = dxk*dyi - dyk*dxi ;
 
-      delx_eta(WW) = vol / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
+      delx_eta(WW) = (volo(WW)*vnew(WW)) / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
-      ax *= norm ;
-      ay *= norm ;
-      az *= norm ;
+      ax *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
+      ay *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
+      az *= (1.0) / ( (volo(WW)*vnew(WW)) + ptiny ) ;
 
       dxv = (-0.25)*(SUM4(m_xd[i][j][k],m_xd[i][j][k+1],m_xd[i+1][j][k+1],m_xd[i+1][j][k]) - SUM4(m_xd[i][j+1][k],m_xd[i][j+1][k+1],m_xd[i+1][j+1][k+1],m_xd[i+1][j+1][k])) ;
       dyv = (-0.25)*(SUM4(m_yd[i][j][k],m_yd[i][j][k+1],m_yd[i+1][j][k+1],m_yd[i+1][j][k]) - SUM4(m_yd[i][j+1][k],m_yd[i][j+1][k+1],m_yd[i+1][j+1][k+1],m_yd[i+1][j+1][k])) ;
