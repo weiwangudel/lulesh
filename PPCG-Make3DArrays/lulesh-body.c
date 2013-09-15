@@ -79,40 +79,16 @@ void CalcMonotonicQGradientsForElems()
     Real_t ax; Real_t ay; Real_t az;
     Real_t dxv; Real_t dyv; Real_t dzv;
     
-    Real_t dxj;
-    Real_t dyj;
-    Real_t dzj;
-    
-    Real_t dxi;
-    Real_t dyi;
-    Real_t dzi;
-    
-    Real_t dxk;
-    Real_t dyk;
-    Real_t dzk;
-
    Index_t i,j,k;
    #pragma scop
    for (i = 0 ; i < edgeElems ; ++i ) 
    for (j = 0 ; j < edgeElems ; ++j ) 
    for (k = 0 ; k < edgeElems ; ++k ) {
 
-      dxj = (-0.25)*(SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i+1][j][k+1],m_x[i+1][j][k]) - SUM4(m_x[i][j+1][k],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k])) ;
-      dyj = (-0.25)*(SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i+1][j][k+1],m_y[i+1][j][k]) - SUM4(m_y[i][j+1][k],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k])) ;
-      dzj = (-0.25)*(SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i+1][j][k+1],m_z[i+1][j][k]) - SUM4(m_z[i][j+1][k],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k])) ;
-
-      dxi = ( 0.25)*(SUM4(m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j][k+1]) - SUM4(m_x[i][j][k],m_x[i][j+1][k],m_x[i+1][j+1][k],m_x[i+1][j][k])) ;
-      dyi = ( 0.25)*(SUM4(m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j][k+1]) - SUM4(m_y[i][j][k],m_y[i][j+1][k],m_y[i+1][j+1][k],m_y[i+1][j][k])) ;
-      dzi = ( 0.25)*(SUM4(m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j][k+1]) - SUM4(m_z[i][j][k],m_z[i][j+1][k],m_z[i+1][j+1][k],m_z[i+1][j][k])) ;
-
-      dxk = ( 0.25)*(SUM4(m_x[i+1][j][k],m_x[i+1][j][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k]) - SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i][j+1][k])) ;
-      dyk = ( 0.25)*(SUM4(m_y[i+1][j][k],m_y[i+1][j][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k]) - SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i][j+1][k])) ;
-      dzk = ( 0.25)*(SUM4(m_z[i+1][j][k],m_z[i+1][j][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k]) - SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i][j+1][k])) ;
-
       /* find delvk and delxk ( i cross j ) */
-      ax = dyi*dzj - dzi*dyj ;
-      ay = dzi*dxj - dxi*dzj ;
-      az = dxi*dyj - dyi*dxj ;
+      ax = (( 0.25)*(SUM4(m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j][k+1]) - SUM4(m_y[i][j][k],m_y[i][j+1][k],m_y[i+1][j+1][k],m_y[i+1][j][k])) )*((-0.25)*(SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i+1][j][k+1],m_z[i+1][j][k]) - SUM4(m_z[i][j+1][k],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k])) ) - (( 0.25)*(SUM4(m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j][k+1]) - SUM4(m_z[i][j][k],m_z[i][j+1][k],m_z[i+1][j+1][k],m_z[i+1][j][k])) )*((-0.25)*(SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i+1][j][k+1],m_y[i+1][j][k]) - SUM4(m_y[i][j+1][k],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k])) ) ;
+      ay = (( 0.25)*(SUM4(m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j][k+1]) - SUM4(m_z[i][j][k],m_z[i][j+1][k],m_z[i+1][j+1][k],m_z[i+1][j][k])) )*((-0.25)*(SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i+1][j][k+1],m_x[i+1][j][k]) - SUM4(m_x[i][j+1][k],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k])) ) - (( 0.25)*(SUM4(m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j][k+1]) - SUM4(m_x[i][j][k],m_x[i][j+1][k],m_x[i+1][j+1][k],m_x[i+1][j][k])) )*((-0.25)*(SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i+1][j][k+1],m_z[i+1][j][k]) - SUM4(m_z[i][j+1][k],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k])) ) ;
+      az = (( 0.25)*(SUM4(m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j][k+1]) - SUM4(m_x[i][j][k],m_x[i][j+1][k],m_x[i+1][j+1][k],m_x[i+1][j][k])) )*((-0.25)*(SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i+1][j][k+1],m_y[i+1][j][k]) - SUM4(m_y[i][j+1][k],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k])) ) - (( 0.25)*(SUM4(m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j][k+1]) - SUM4(m_y[i][j][k],m_y[i][j+1][k],m_y[i+1][j+1][k],m_y[i+1][j][k])) )*((-0.25)*(SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i+1][j][k+1],m_x[i+1][j][k]) - SUM4(m_x[i][j+1][k],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k])) ) ;
 
       delx_zeta(WW) = (volo(WW)*vnew(WW)) / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
@@ -125,12 +101,13 @@ void CalcMonotonicQGradientsForElems()
       dzv = (0.25)*(SUM4(m_zd[i+1][j][k],m_zd[i+1][j][k+1],m_zd[i+1][j+1][k+1],m_zd[i+1][j+1][k]) - SUM4(m_zd[i][j][k],m_zd[i][j][k+1],m_zd[i][j+1][k+1],m_zd[i][j+1][k])) ;
 
       delv_zeta(WW) = ax*dxv + ay*dyv + az*dzv ;
+//============================================================================
 
       /* find delxi and delvi ( j cross k ) */
 
-      ax = dyj*dzk - dzj*dyk ;
-      ay = dzj*dxk - dxj*dzk ;
-      az = dxj*dyk - dyj*dxk ;
+      ax = ((-0.25)*(SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i+1][j][k+1],m_y[i+1][j][k]) - SUM4(m_y[i][j+1][k],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k])) )*(( 0.25)*(SUM4(m_z[i+1][j][k],m_z[i+1][j][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k]) - SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i][j+1][k])) ) - ((-0.25)*(SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i+1][j][k+1],m_z[i+1][j][k]) - SUM4(m_z[i][j+1][k],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k])) )*(( 0.25)*(SUM4(m_y[i+1][j][k],m_y[i+1][j][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k]) - SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i][j+1][k])) ) ;
+      ay = ((-0.25)*(SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i+1][j][k+1],m_z[i+1][j][k]) - SUM4(m_z[i][j+1][k],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k])) )*(( 0.25)*(SUM4(m_x[i+1][j][k],m_x[i+1][j][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k]) - SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i][j+1][k])) ) - ((-0.25)*(SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i+1][j][k+1],m_x[i+1][j][k]) - SUM4(m_x[i][j+1][k],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k])) )*(( 0.25)*(SUM4(m_z[i+1][j][k],m_z[i+1][j][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k]) - SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i][j+1][k])) ) ;
+      az = ((-0.25)*(SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i+1][j][k+1],m_x[i+1][j][k]) - SUM4(m_x[i][j+1][k],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k])) )*(( 0.25)*(SUM4(m_y[i+1][j][k],m_y[i+1][j][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k]) - SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i][j+1][k])) ) - ((-0.25)*(SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i+1][j][k+1],m_y[i+1][j][k]) - SUM4(m_y[i][j+1][k],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k])) )*(( 0.25)*(SUM4(m_x[i+1][j][k],m_x[i+1][j][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k]) - SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i][j+1][k])) ) ;
 
       delx_xi(WW) = (volo(WW)*vnew(WW)) / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
@@ -143,12 +120,12 @@ void CalcMonotonicQGradientsForElems()
       dzv = (0.25)*(SUM4(m_zd[i][j][k+1],m_zd[i][j+1][k+1],m_zd[i+1][j+1][k+1],m_zd[i+1][j][k+1]) - SUM4(m_zd[i][j][k],m_zd[i][j+1][k],m_zd[i+1][j+1][k],m_zd[i+1][j][k])) ;
 
       delv_xi(WW) = ax*dxv + ay*dyv + az*dzv ;
+//==============================================================================
 
       /* find delxj and delvj ( k cross i ) */
-
-      ax = dyk*dzi - dzk*dyi ;
-      ay = dzk*dxi - dxk*dzi ;
-      az = dxk*dyi - dyk*dxi ;
+      ax = (( 0.25)*(SUM4(m_y[i+1][j][k],m_y[i+1][j][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k]) - SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i][j+1][k])) )*(( 0.25)*(SUM4(m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j][k+1]) - SUM4(m_z[i][j][k],m_z[i][j+1][k],m_z[i+1][j+1][k],m_z[i+1][j][k])) ) - (( 0.25)*(SUM4(m_z[i+1][j][k],m_z[i+1][j][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k]) - SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i][j+1][k])) )*(( 0.25)*(SUM4(m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j][k+1]) - SUM4(m_y[i][j][k],m_y[i][j+1][k],m_y[i+1][j+1][k],m_y[i+1][j][k])) ) ;
+      ay = (( 0.25)*(SUM4(m_z[i+1][j][k],m_z[i+1][j][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j+1][k]) - SUM4(m_z[i][j][k],m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i][j+1][k])) )*(( 0.25)*(SUM4(m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j][k+1]) - SUM4(m_x[i][j][k],m_x[i][j+1][k],m_x[i+1][j+1][k],m_x[i+1][j][k])) ) - (( 0.25)*(SUM4(m_x[i+1][j][k],m_x[i+1][j][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k]) - SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i][j+1][k])) )*(( 0.25)*(SUM4(m_z[i][j][k+1],m_z[i][j+1][k+1],m_z[i+1][j+1][k+1],m_z[i+1][j][k+1]) - SUM4(m_z[i][j][k],m_z[i][j+1][k],m_z[i+1][j+1][k],m_z[i+1][j][k])) ) ;
+      az = (( 0.25)*(SUM4(m_x[i+1][j][k],m_x[i+1][j][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j+1][k]) - SUM4(m_x[i][j][k],m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i][j+1][k])) )*(( 0.25)*(SUM4(m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j][k+1]) - SUM4(m_y[i][j][k],m_y[i][j+1][k],m_y[i+1][j+1][k],m_y[i+1][j][k])) ) - (( 0.25)*(SUM4(m_y[i+1][j][k],m_y[i+1][j][k+1],m_y[i+1][j+1][k+1],m_y[i+1][j+1][k]) - SUM4(m_y[i][j][k],m_y[i][j][k+1],m_y[i][j+1][k+1],m_y[i][j+1][k])) )*(( 0.25)*(SUM4(m_x[i][j][k+1],m_x[i][j+1][k+1],m_x[i+1][j+1][k+1],m_x[i+1][j][k+1]) - SUM4(m_x[i][j][k],m_x[i][j+1][k],m_x[i+1][j+1][k],m_x[i+1][j][k])) ) ;
 
       delx_eta(WW) = (volo(WW)*vnew(WW)) / SQRT(ax*ax + ay*ay + az*az + ptiny) ;
 
