@@ -763,7 +763,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
 
    Index_t i,j,k;
 //#pragma omp parallel for firstprivate(numElem, hourg) 
-   //#pragma scop
+   #pragma scop
    for (i=0; i<edgeElems; ++i)                  //i.e. plane
       for (j=0; j<edgeElems; ++j)               //i.e. row
         for (k=0; k<edgeElems; ++k)   {           //i.e. col
@@ -852,176 +852,102 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       //                hourgam4,hourgam5,hourgam6,hourgam7,
       //                coefficient, hgfx, hgfy, hgfz);
       {
-
-        Real_t h00 =
-           hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] +
-           hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] +
-           hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] +
-           hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k];
-
-        Real_t h01 =
-           hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] +
-           hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] +
-           hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] +
-           hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k];
-
-        Real_t h02 =
-           hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+
-           hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+
-           hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+
-           hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k];
-
-        Real_t h03 =
-           hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] +
-           hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] +
-           hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] +
-           hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k];
-
         hgfx[0] = coefficient *
-           (hourgam0[0] * h00 + hourgam0[1] * h01 +
-            hourgam0[2] * h02 + hourgam0[3] * h03);
+           (hourgam0[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam0[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam0[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam0[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 
         hgfx[1] = coefficient *
-           (hourgam1[0] * h00 + hourgam1[1] * h01 +
-            hourgam1[2] * h02 + hourgam1[3] * h03);
+           (hourgam1[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam1[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam1[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam1[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 
         hgfx[2] = coefficient *
-           (hourgam2[0] * h00 + hourgam2[1] * h01 +
-            hourgam2[2] * h02 + hourgam2[3] * h03);
+           (hourgam2[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam2[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam2[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam2[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 
         hgfx[3] = coefficient *
-           (hourgam3[0] * h00 + hourgam3[1] * h01 +
-            hourgam3[2] * h02 + hourgam3[3] * h03);
+           (hourgam3[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam3[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam3[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam3[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 
         hgfx[4] = coefficient *
-           (hourgam4[0] * h00 + hourgam4[1] * h01 +
-            hourgam4[2] * h02 + hourgam4[3] * h03);
+           (hourgam4[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam4[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam4[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam4[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 
         hgfx[5] = coefficient *
-           (hourgam5[0] * h00 + hourgam5[1] * h01 +
-            hourgam5[2] * h02 + hourgam5[3] * h03);
+           (hourgam5[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam5[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam5[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam5[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 
         hgfx[6] = coefficient *
-           (hourgam6[0] * h00 + hourgam6[1] * h01 +
-            hourgam6[2] * h02 + hourgam6[3] * h03);
+           (hourgam6[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam6[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam6[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam6[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 
         hgfx[7] = coefficient *
-           (hourgam7[0] * h00 + hourgam7[1] * h01 +
-            hourgam7[2] * h02 + hourgam7[3] * h03);
+           (hourgam7[0] * (hourgam0[0] * m_xd[i][j][k] + hourgam1[0] * m_xd[i][j][k+1] + hourgam2[0] * m_xd[i][j+1][k+1] + hourgam3[0] * m_xd[i][j+1][k] + hourgam4[0] * m_xd[i+1][j][k] + hourgam5[0] * m_xd[i+1][j][k+1] + hourgam6[0] * m_xd[i+1][j+1][k+1] + hourgam7[0] * m_xd[i+1][j+1][k]) + hourgam7[1] * (hourgam0[1] * m_xd[i][j][k] + hourgam1[1] * m_xd[i][j][k+1] + hourgam2[1] * m_xd[i][j+1][k+1] + hourgam3[1] * m_xd[i][j+1][k] + hourgam4[1] * m_xd[i+1][j][k] + hourgam5[1] * m_xd[i+1][j][k+1] + hourgam6[1] * m_xd[i+1][j+1][k+1] + hourgam7[1] * m_xd[i+1][j+1][k]) +
+            hourgam7[2] * (hourgam0[2] * m_xd[i][j][k] + hourgam1[2] * m_xd[i][j][k+1]+ hourgam2[2] * m_xd[i][j+1][k+1] + hourgam3[2] * m_xd[i][j+1][k]+ hourgam4[2] * m_xd[i+1][j][k] + hourgam5[2] * m_xd[i+1][j][k+1]+ hourgam6[2] * m_xd[i+1][j+1][k+1] + hourgam7[2] * m_xd[i+1][j+1][k]) + hourgam7[3] * (hourgam0[3] * m_xd[i][j][k] + hourgam1[3] * m_xd[i][j][k+1] + hourgam2[3] * m_xd[i][j+1][k+1] + hourgam3[3] * m_xd[i][j+1][k] + hourgam4[3] * m_xd[i+1][j][k] + hourgam5[3] * m_xd[i+1][j][k+1] + hourgam6[3] * m_xd[i+1][j+1][k+1] + hourgam7[3] * m_xd[i+1][j+1][k]));
 //==============================================================================
-        h00 =
-           hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] +
-           hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] +
-           hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +
-           hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k];
-
-        h01 =
-           hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] +
-           hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] +
-           hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] +
-           hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k];
-
-        h02 =
-           hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+
-           hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+
-           hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+
-           hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k];
-
-        h03 =
-           hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] +
-           hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] +
-           hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] +
-           hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k];
-
 
         hgfy[0] = coefficient *
-           (hourgam0[0] * h00 + hourgam0[1] * h01 +
-            hourgam0[2] * h02 + hourgam0[3] * h03);
+           (hourgam0[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam0[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam0[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam0[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 
         hgfy[1] = coefficient *
-           (hourgam1[0] * h00 + hourgam1[1] * h01 +
-            hourgam1[2] * h02 + hourgam1[3] * h03);
+           (hourgam1[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam1[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam1[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam1[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 
         hgfy[2] = coefficient *
-           (hourgam2[0] * h00 + hourgam2[1] * h01 +
-            hourgam2[2] * h02 + hourgam2[3] * h03);
+           (hourgam2[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam2[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam2[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam2[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 
         hgfy[3] = coefficient *
-           (hourgam3[0] * h00 + hourgam3[1] * h01 +
-            hourgam3[2] * h02 + hourgam3[3] * h03);
+           (hourgam3[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam3[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam3[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam3[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 
         hgfy[4] = coefficient *
-           (hourgam4[0] * h00 + hourgam4[1] * h01 +
-            hourgam4[2] * h02 + hourgam4[3] * h03);
+           (hourgam4[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam4[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam4[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam4[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 
         hgfy[5] = coefficient *
-           (hourgam5[0] * h00 + hourgam5[1] * h01 +
-            hourgam5[2] * h02 + hourgam5[3] * h03);
+           (hourgam5[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam5[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam5[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam5[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 
         hgfy[6] = coefficient *
-           (hourgam6[0] * h00 + hourgam6[1] * h01 +
-            hourgam6[2] * h02 + hourgam6[3] * h03);
+           (hourgam6[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam6[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam6[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam6[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 
         hgfy[7] = coefficient *
-           (hourgam7[0] * h00 + hourgam7[1] * h01 +
-            hourgam7[2] * h02 + hourgam7[3] * h03);
+           (hourgam7[0] * (hourgam0[0] * m_yd[i][j][k] + hourgam1[0] * m_yd[i][j][k+1] + hourgam2[0] * m_yd[i][j+1][k+1] + hourgam3[0] * m_yd[i][j+1][k] + hourgam4[0] * m_yd[i+1][j][k] + hourgam5[0] * m_yd[i+1][j][k+1] +  hourgam6[0] * m_yd[i+1][j+1][k+1] + hourgam7[0] * m_yd[i+1][j+1][k]) + hourgam7[1] * (hourgam0[1] * m_yd[i][j][k] + hourgam1[1] * m_yd[i][j][k+1] + hourgam2[1] * m_yd[i][j+1][k+1] + hourgam3[1] * m_yd[i][j+1][k] + hourgam4[1] * m_yd[i+1][j][k] + hourgam5[1] * m_yd[i+1][j][k+1] + hourgam6[1] * m_yd[i+1][j+1][k+1] + hourgam7[1] * m_yd[i+1][j+1][k]) +
+            hourgam7[2] * (hourgam0[2] * m_yd[i][j][k] + hourgam1[2] * m_yd[i][j][k+1]+ hourgam2[2] * m_yd[i][j+1][k+1] + hourgam3[2] * m_yd[i][j+1][k]+ hourgam4[2] * m_yd[i+1][j][k] + hourgam5[2] * m_yd[i+1][j][k+1]+ hourgam6[2] * m_yd[i+1][j+1][k+1] + hourgam7[2] * m_yd[i+1][j+1][k]) + hourgam7[3] * (hourgam0[3] * m_yd[i][j][k] + hourgam1[3] * m_yd[i][j][k+1] + hourgam2[3] * m_yd[i][j+1][k+1] + hourgam3[3] * m_yd[i][j+1][k] + hourgam4[3] * m_yd[i+1][j][k] + hourgam5[3] * m_yd[i+1][j][k+1] + hourgam6[3] * m_yd[i+1][j+1][k+1] + hourgam7[3] * m_yd[i+1][j+1][k]));
 //==============================================================================
-        h00 =
-           hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] +
-           hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] +
-           hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] +
-           hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k];
-
-        h01 =
-           hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] +
-           hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] +
-           hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] +
-           hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k];
-
-        h02 =
-           hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+
-           hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+
-           hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+
-           hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k];
-
-        h03 =
-           hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] +
-           hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] +
-           hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] +
-           hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k];
-
-
         hgfz[0] = coefficient *
-           (hourgam0[0] * h00 + hourgam0[1] * h01 +
-            hourgam0[2] * h02 + hourgam0[3] * h03);
+           (hourgam0[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam0[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam0[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam0[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
 
         hgfz[1] = coefficient *
-           (hourgam1[0] * h00 + hourgam1[1] * h01 +
-            hourgam1[2] * h02 + hourgam1[3] * h03);
+           (hourgam1[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam1[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam1[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam1[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
 
         hgfz[2] = coefficient *
-           (hourgam2[0] * h00 + hourgam2[1] * h01 +
-            hourgam2[2] * h02 + hourgam2[3] * h03);
+           (hourgam2[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam2[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam2[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam2[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
 
         hgfz[3] = coefficient *
-           (hourgam3[0] * h00 + hourgam3[1] * h01 +
-            hourgam3[2] * h02 + hourgam3[3] * h03);
+           (hourgam3[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam3[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam3[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam3[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
 
         hgfz[4] = coefficient *
-           (hourgam4[0] * h00 + hourgam4[1] * h01 +
-            hourgam4[2] * h02 + hourgam4[3] * h03);
+           (hourgam4[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam4[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam4[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam4[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
 
         hgfz[5] = coefficient *
-           (hourgam5[0] * h00 + hourgam5[1] * h01 +
-            hourgam5[2] * h02 + hourgam5[3] * h03);
+           (hourgam5[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam5[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam5[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam5[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
 
         hgfz[6] = coefficient *
-           (hourgam6[0] * h00 + hourgam6[1] * h01 +
-            hourgam6[2] * h02 + hourgam6[3] * h03);
+           (hourgam6[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam6[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam6[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam6[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
 
         hgfz[7] = coefficient *
-           (hourgam7[0] * h00 + hourgam7[1] * h01 +
-            hourgam7[2] * h02 + hourgam7[3] * h03);
+           (hourgam7[0] * (hourgam0[0] * m_zd[i][j][k] + hourgam1[0] * m_zd[i][j][k+1] + hourgam2[0] * m_zd[i][j+1][k+1] + hourgam3[0] * m_zd[i][j+1][k] + hourgam4[0] * m_zd[i+1][j][k] + hourgam5[0] * m_zd[i+1][j][k+1] + hourgam6[0] * m_zd[i+1][j+1][k+1] + hourgam7[0] * m_zd[i+1][j+1][k]) + hourgam7[1] * (hourgam0[1] * m_zd[i][j][k] + hourgam1[1] * m_zd[i][j][k+1] + hourgam2[1] * m_zd[i][j+1][k+1] + hourgam3[1] * m_zd[i][j+1][k] + hourgam4[1] * m_zd[i+1][j][k] + hourgam5[1] * m_zd[i+1][j][k+1] + hourgam6[1] * m_zd[i+1][j+1][k+1] + hourgam7[1] * m_zd[i+1][j+1][k]) +
+            hourgam7[2] * (hourgam0[2] * m_zd[i][j][k] + hourgam1[2] * m_zd[i][j][k+1]+ hourgam2[2] * m_zd[i][j+1][k+1] + hourgam3[2] * m_zd[i][j+1][k]+ hourgam4[2] * m_zd[i+1][j][k] + hourgam5[2] * m_zd[i+1][j][k+1]+hourgam6[2] * m_zd[i+1][j+1][k+1] + hourgam7[2] * m_zd[i+1][j+1][k]) + hourgam7[3] * (hourgam0[3] * m_zd[i][j][k] + hourgam1[3] * m_zd[i][j][k+1] + hourgam2[3] * m_zd[i][j+1][k+1] + hourgam3[3] * m_zd[i][j+1][k] + hourgam4[3] * m_zd[i+1][j][k] + hourgam5[3] * m_zd[i+1][j][k+1] + hourgam6[3] * m_zd[i+1][j+1][k+1] + hourgam7[3] * m_zd[i+1][j+1][k]));
       }
 
       fx_elem[i3+0] = hgfx[0];
@@ -1052,7 +978,7 @@ void CalcFBHourglassForceForElems(Real_t *determ,
       fz_elem[i3+7] = hgfz[7];
 
    }
-  //#pragma endscop
+  #pragma endscop
 
   {
      Index_t numNode = numNode() ;
