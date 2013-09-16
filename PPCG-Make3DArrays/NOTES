@@ -1,0 +1,9 @@
+1. 2013 Summer: lulesh scops extracted, however polyopt took 100 minutes for 
+transforming the largest scop. Other scops probably took seconds to minutes.
+2. After communications with Albert Cohen, they were saying --live-range-analysis
+would help. However, on September 13th, I found that the --live-range-analysis 
+will not generate OpenMP. Meanwhile, I converted many arrays to 3D in the hope 
+that PPCG/Polyopt would be better transforming it.
+3. I have no array/scalar privatization and no scalar replacement verison.
+And I have scop no dependency version.
+Need to test with PPCG and Polyopt to see the performance.
