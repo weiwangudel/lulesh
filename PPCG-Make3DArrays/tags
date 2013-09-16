@@ -71,8 +71,8 @@ TRIPLE_PRODUCT	lulesh-body.c	235;"	d	file:
 TRIPLE_PRODUCT	lulesh-body.c	248;"	d	file:
 TRIPLE_PRODUCT	lulesh-others.c	458;"	d	file:
 TRIPLE_PRODUCT	lulesh-others.c	471;"	d	file:
-TRIPLE_PRODUCT	ppcg_lulesh-body.c	469;"	d	file:
-TRIPLE_PRODUCT	ppcg_lulesh-body.c	482;"	d	file:
+TRIPLE_PRODUCT	ppcg_lulesh-body.c	502;"	d	file:
+TRIPLE_PRODUCT	ppcg_lulesh-body.c	515;"	d	file:
 TimeIncrement	lulesh-others.c	/^void TimeIncrement()$/;"	f
 UpdateVolumesForElems	lulesh-others.c	/^void UpdateVolumesForElems()$/;"	f
 VolumeError	lulesh.h	/^enum { VolumeError = -1, QStopError = -2 } ;$/;"	e	enum:__anon1
@@ -219,11 +219,12 @@ main	lulesh-body.c	/^int main(int argc, char *argv[])$/;"	f
 main	ppcg_lulesh-body.c	/^int main(int argc, char *argv[])$/;"	f
 matElemlist	lulesh.h	33;"	d
 max	lulesh.h	99;"	d
-max	ppcg_lulesh-body.c	1384;"	d	file:
-max	ppcg_lulesh-body.c	265;"	d	file:
+max	ppcg_lulesh-body.c	1173;"	d	file:
+max	ppcg_lulesh-body.c	253;"	d	file:
 max	ppcg_lulesh-body.c	84;"	d	file:
-min	ppcg_lulesh-body.c	1383;"	d	file:
-min	ppcg_lulesh-body.c	264;"	d	file:
+min	ppcg_lulesh-body.c	1035;"	d	file:
+min	ppcg_lulesh-body.c	1172;"	d	file:
+min	ppcg_lulesh-body.c	252;"	d	file:
 min	ppcg_lulesh-body.c	83;"	d	file:
 monoq_limiter_mult	lulesh.h	75;"	d
 monoq_max_slope	lulesh.h	74;"	d
