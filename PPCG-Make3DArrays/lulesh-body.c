@@ -238,12 +238,40 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 
 
     Real_t dt2 = (0.5) * dt;
-    for ( Index_t j=0 ; j<8 ; ++j )
-    {
-       x_local[j] -= dt2 * xd_local[j];
-       y_local[j] -= dt2 * yd_local[j];
-       z_local[j] -= dt2 * zd_local[j];
-    }
+    //for ( Index_t j=0 ; j<8 ; ++j )
+    //{
+    //   x_local[j] -= dt2 * xd_local[j];
+    //   y_local[j] -= dt2 * yd_local[j];
+    //   z_local[j] -= dt2 * zd_local[j];
+    //}
+    x_local[0] -= (0.5)*dt * xd_local[0];                                             
+    x_local[1] -= (0.5)*dt * xd_local[1];                                             
+    x_local[2] -= (0.5)*dt * xd_local[2];                                             
+    x_local[3] -= (0.5)*dt * xd_local[3];                                             
+    x_local[4] -= (0.5)*dt * xd_local[4];                                             
+    x_local[5] -= (0.5)*dt * xd_local[5];                                             
+    x_local[6] -= (0.5)*dt * xd_local[6];                                             
+    x_local[7] -= (0.5)*dt * xd_local[7];                                             
+
+    y_local[0] -= (0.5)*dt * yd_local[0];                                             
+    y_local[1] -= (0.5)*dt * yd_local[1];                                             
+    y_local[2] -= (0.5)*dt * yd_local[2];                                             
+    y_local[3] -= (0.5)*dt * yd_local[3];                                             
+    y_local[4] -= (0.5)*dt * yd_local[4];                                             
+    y_local[5] -= (0.5)*dt * yd_local[5];                                             
+    y_local[6] -= (0.5)*dt * yd_local[6];                                             
+    y_local[7] -= (0.5)*dt * yd_local[7];                                             
+
+    z_local[0] -= (0.5)*dt * zd_local[0];                                             
+    z_local[1] -= (0.5)*dt * zd_local[1];                                             
+    z_local[2] -= (0.5)*dt * zd_local[2];                                             
+    z_local[3] -= (0.5)*dt * zd_local[3];                                             
+    z_local[4] -= (0.5)*dt * zd_local[4];                                             
+    z_local[5] -= (0.5)*dt * zd_local[5];                                             
+    z_local[6] -= (0.5)*dt * zd_local[6];                                             
+    z_local[7] -= (0.5)*dt * zd_local[7];          
+
+    
 
     //CalcElemShapeFunctionDerivatives( x_local,
     //                                      y_local,
