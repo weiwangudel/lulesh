@@ -16,24 +16,19 @@ ApplyMaterialPropertiesForElems	lulesh-others.c	/^void ApplyMaterialPropertiesFo
 AreaFace	lulesh-others.c	/^Real_t AreaFace( const Real_t x0, const Real_t x1,$/;"	f
 CBRT	lulesh.h	116;"	d
 CalcAccelerationForNodes	lulesh-body.c	/^void CalcAccelerationForNodes()$/;"	f
-CalcAccelerationForNodes	ppcg_lulesh-body.c	/^void CalcAccelerationForNodes()$/;"	f
 CalcCourantConstraintForElems	lulesh-others.c	/^void CalcCourantConstraintForElems()$/;"	f
 CalcElemCharacteristicLength	lulesh-others.c	/^Real_t CalcElemCharacteristicLength( const Real_t x[8],$/;"	f
 CalcElemVolume	lulesh-others.c	/^Real_t CalcElemVolume( const Real_t x0, const Real_t x1,$/;"	f
 CalcElemVolume_3	lulesh-others.c	/^Real_t CalcElemVolume_3( const Real_t x[8], const Real_t y[8], const Real_t z[8] )$/;"	f
 CalcEnergyForElems	lulesh-others.c	/^void CalcEnergyForElems(Real_t* p_new, Real_t* e_new, Real_t* q_new,$/;"	f
 CalcFBHourglassForceForElems	lulesh-body.c	/^void CalcFBHourglassForceForElems(Real_t *determ,$/;"	f
-CalcFBHourglassForceForElems	ppcg_lulesh-body.c	/^void CalcFBHourglassForceForElems(Real_t *determ,$/;"	f
 CalcForceForNodes	lulesh-others.c	/^ void CalcForceForNodes()$/;"	f
 CalcHourglassControlForElems	lulesh-body.c	/^void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)$/;"	f
-CalcHourglassControlForElems	ppcg_lulesh-body.c	/^void CalcHourglassControlForElems(Real_t determ[], Real_t hgcoef)$/;"	f
 CalcHydroConstraintForElems	lulesh-others.c	/^void CalcHydroConstraintForElems()$/;"	f
 CalcKinematicsForElems	lulesh-body.c	/^void CalcKinematicsForElems( Index_t numElem, Real_t dt )$/;"	f
-CalcKinematicsForElems	ppcg_lulesh-body.c	/^void CalcKinematicsForElems( Index_t numElem, Real_t dt )$/;"	f
 CalcLagrangeElements	lulesh-others.c	/^void CalcLagrangeElements(Real_t deltatime)$/;"	f
 CalcMonotonicQForElems	lulesh-others.c	/^void CalcMonotonicQForElems()$/;"	f
 CalcMonotonicQGradientsForElems	lulesh-body.c	/^void CalcMonotonicQGradientsForElems()$/;"	f
-CalcMonotonicQGradientsForElems	ppcg_lulesh-body.c	/^void CalcMonotonicQGradientsForElems()$/;"	f
 CalcMonotonicQRegionForElems	lulesh-others.c	/^void CalcMonotonicQRegionForElems(\/\/ parameters$/;"	f
 CalcPositionForNodes	lulesh-others.c	/^void CalcPositionForNodes(const Real_t dt)$/;"	f
 CalcPressureForElems	lulesh-others.c	/^void CalcPressureForElems(Real_t* p_new, Real_t* bvc,$/;"	f
@@ -54,9 +49,7 @@ Index_t	lulesh.h	/^typedef int    Index_t ; \/* array subscript and loop index *
 InitStressTermsForElems	lulesh-others.c	/^void InitStressTermsForElems(Index_t numElem, $/;"	f
 Int_t	lulesh.h	/^typedef int    Int_t ;   \/* integer representation *\/$/;"	t
 IntegrateStressForElems	lulesh-body.c	/^void IntegrateStressForElems( Index_t numElem,$/;"	f
-IntegrateStressForElems	ppcg_lulesh-body.c	/^void IntegrateStressForElems( Index_t numElem,$/;"	f
 LULESH_SHOW_PROGRESS	lulesh-body.c	71;"	d	file:
-LULESH_SHOW_PROGRESS	ppcg_lulesh-body.c	71;"	d	file:
 LagrangeElements	lulesh-others.c	/^void LagrangeElements()$/;"	f
 LagrangeLeapFrog	lulesh-others.c	/^void LagrangeLeapFrog()$/;"	f
 LagrangeNodal	lulesh-others.c	/^void LagrangeNodal()$/;"	f
@@ -66,13 +59,10 @@ Release	lulesh-others.c	/^void Release(Real_t **ptr)$/;"	f
 SQRT	lulesh.h	115;"	d
 SUM4	lulesh-body.c	103;"	d	file:
 SUM4	lulesh-body.c	76;"	d	file:
-SUM4	ppcg_lulesh-body.c	76;"	d	file:
 TRIPLE_PRODUCT	lulesh-body.c	235;"	d	file:
 TRIPLE_PRODUCT	lulesh-body.c	248;"	d	file:
 TRIPLE_PRODUCT	lulesh-others.c	458;"	d	file:
 TRIPLE_PRODUCT	lulesh-others.c	471;"	d	file:
-TRIPLE_PRODUCT	ppcg_lulesh-body.c	502;"	d	file:
-TRIPLE_PRODUCT	ppcg_lulesh-body.c	515;"	d	file:
 TimeIncrement	lulesh-others.c	/^void TimeIncrement()$/;"	f
 UpdateVolumesForElems	lulesh-others.c	/^void UpdateVolumesForElems()$/;"	f
 VolumeError	lulesh.h	/^enum { VolumeError = -1, QStopError = -2 } ;$/;"	e	enum:__anon1
@@ -216,16 +206,8 @@ m_z	lulesh.h	/^Real_t m_z[edgeNodes][edgeNodes][edgeNodes];$/;"	v
 m_zd	lulesh.h	/^Real_t m_zd[edgeNodes][edgeNodes][edgeNodes];$/;"	v
 m_zdd	lulesh.h	/^   Real_t * m_zdd ;$/;"	v
 main	lulesh-body.c	/^int main(int argc, char *argv[])$/;"	f
-main	ppcg_lulesh-body.c	/^int main(int argc, char *argv[])$/;"	f
 matElemlist	lulesh.h	33;"	d
 max	lulesh.h	99;"	d
-max	ppcg_lulesh-body.c	1173;"	d	file:
-max	ppcg_lulesh-body.c	253;"	d	file:
-max	ppcg_lulesh-body.c	84;"	d	file:
-min	ppcg_lulesh-body.c	1035;"	d	file:
-min	ppcg_lulesh-body.c	1172;"	d	file:
-min	ppcg_lulesh-body.c	252;"	d	file:
-min	ppcg_lulesh-body.c	83;"	d	file:
 monoq_limiter_mult	lulesh.h	75;"	d
 monoq_max_slope	lulesh.h	74;"	d
 nodalMass	lulesh.h	21;"	d

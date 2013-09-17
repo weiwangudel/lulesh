@@ -182,78 +182,27 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     // volume calculations
 //    volume = CalcElemVolume_3(x_local, y_local, z_local );
     {
-      Real_t twelveth = (1.0)/(12.0);
-    
-      Real_t dx61 = x_local[6] - x_local[1];
-      Real_t dy61 = y_local[6] - y_local[1];
-      Real_t dz61 = z_local[6] - z_local[1];
-    
-      Real_t dx70 = x_local[7] - x_local[0];
-      Real_t dy70 = y_local[7] - y_local[0];
-      Real_t dz70 = z_local[7] - z_local[0];
-    
-      Real_t dx63 = x_local[6] - x_local[3];
-      Real_t dy63 = y_local[6] - y_local[3];
-      Real_t dz63 = z_local[6] - z_local[3];
-    
-      Real_t dx20 = x_local[2] - x_local[0];
-      Real_t dy20 = y_local[2] - y_local[0];
-      Real_t dz20 = z_local[2] - z_local[0];
-    
-      Real_t dx50 = x_local[5] - x_local[0];
-      Real_t dy50 = y_local[5] - y_local[0];
-      Real_t dz50 = z_local[5] - z_local[0];
-    
-      Real_t dx64 = x_local[6] - x_local[4];
-      Real_t dy64 = y_local[6] - y_local[4];
-      Real_t dz64 = z_local[6] - z_local[4];
-    
-      Real_t dx31 = x_local[3] - x_local[1];
-      Real_t dy31 = y_local[3] - y_local[1];
-      Real_t dz31 = z_local[3] - z_local[1];
-    
-      Real_t dx72 = x_local[7] - x_local[2];
-      Real_t dy72 = y_local[7] - y_local[2];
-      Real_t dz72 = z_local[7] - z_local[2];
-    
-      Real_t dx43 = x_local[4] - x_local[3];
-      Real_t dy43 = y_local[4] - y_local[3];
-      Real_t dz43 = z_local[4] - z_local[3];
-    
-      Real_t dx57 = x_local[5] - x_local[7];
-      Real_t dy57 = y_local[5] - y_local[7];
-      Real_t dz57 = z_local[5] - z_local[7];
-    
-      Real_t dx14 = x_local[1] - x_local[4];
-      Real_t dy14 = y_local[1] - y_local[4];
-      Real_t dz14 = z_local[1] - z_local[4];
-    
-      Real_t dx25 = x_local[2] - x_local[5];
-      Real_t dy25 = y_local[2] - y_local[5];
-      Real_t dz25 = z_local[2] - z_local[5];
-    
     #define TRIPLE_PRODUCT(x1, y1, z1, x2, y2, z2, x3, y3, z3) ((x1)*((y2)*(z3) - (z2)*(y3)) + (x2)*((z1)*(y3) - (y1)*(z3)) + (x3)*((y1)*(z2) - (z1)*(y2)))
     
-      volume =
-        TRIPLE_PRODUCT(dx31 + dx72, dx63, dx20,
-           dy31 + dy72, dy63, dy20,
-           dz31 + dz72, dz63, dz20) +
-        TRIPLE_PRODUCT(dx43 + dx57, dx64, dx70,
-           dy43 + dy57, dy64, dy70,
-           dz43 + dz57, dz64, dz70) +
-        TRIPLE_PRODUCT(dx14 + dx25, dx61, dx50,
-           dy14 + dy25, dy61, dy50,
-           dz14 + dz25, dz61, dz50);
+      volume = (1.0)/(12.0) * (
+        TRIPLE_PRODUCT((x_local[3] - x_local[1]) + (x_local[7] - x_local[2]), (x_local[6] - x_local[3]), (x_local[2] - x_local[0]),
+           (y_local[3] - y_local[1]) + (y_local[7] - y_local[2]), (y_local[6] - y_local[3]), (y_local[2] - y_local[0]),
+           (z_local[3] - z_local[1]) + (z_local[7] - z_local[2]), (z_local[6] - z_local[3]), (z_local[2] - z_local[0])) +
+        TRIPLE_PRODUCT((x_local[4] - x_local[3]) + (x_local[5] - x_local[7]), (x_local[6] - x_local[4]), (x_local[7] - x_local[0]),
+           (y_local[4] - y_local[3]) + (y_local[5] - y_local[7]), (y_local[6] - y_local[4]), (y_local[7] - y_local[0]),
+           (z_local[4] - z_local[3]) + (z_local[5] - z_local[7]), (z_local[6] - z_local[4]), (z_local[7] - z_local[0])) +
+        TRIPLE_PRODUCT((x_local[1] - x_local[4]) + (x_local[2] - x_local[5]), (x_local[6] - x_local[1]), (x_local[5] - x_local[0]),
+           (y_local[1] - y_local[4]) + (y_local[2] - y_local[5]), (y_local[6] - y_local[1]), (y_local[5] - y_local[0]),
+           (z_local[1] - z_local[4]) + (z_local[2] - z_local[5]), (z_local[6] - z_local[1]), (z_local[5] - z_local[0]))  );
     
     #undef TRIPLE_PRODUCT
-    
-      volume *= twelveth;
     }
 
     relativeVolume = volume / volo((WW)) ;
     vnew((WW)) = relativeVolume ;
     delv((WW)) = relativeVolume - v((WW)) ;
 
+    // How to resolve this function? 
     // set characteristic length
     arealg((WW)) = CalcElemCharacteristicLength(x_local,
                                                   y_local,
