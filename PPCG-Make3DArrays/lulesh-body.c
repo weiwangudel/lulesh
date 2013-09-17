@@ -134,9 +134,6 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   Real_t yd_local[8] ;
   Real_t zd_local[8] ;
   Real_t detJ = (0.0) ;
-  Real_t fjxxi; Real_t fjxet; Real_t fjxze;
-  Real_t fjyxi; Real_t fjyet; Real_t fjyze;
-  Real_t fjzxi; Real_t fjzet; Real_t fjzze;
   Real_t cjxxi; Real_t cjxet; Real_t cjxze;
   Real_t cjyxi; Real_t cjyet; Real_t cjyze;
   Real_t cjzxi; Real_t cjzet; Real_t cjzze;
@@ -279,30 +276,18 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     //                                      B, &detJ );
 {
 
-  fjxxi = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
-  fjxet = .125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) );
-  fjxze = .125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) );
-
-  fjyxi = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
-  fjyet = .125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) );
-  fjyze = .125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) );
-
-  fjzxi = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
-  fjzet = .125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) );
-  fjzze = .125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) );
-
   /* compute cofactors */
-  cjxxi =    (fjyet * fjzze) - (fjzet * fjyze);
-  cjxet =  - (fjyxi * fjzze) + (fjzxi * fjyze);
-  cjxze =    (fjyxi * fjzet) - (fjzxi * fjyet);
+  cjxxi =    ((.125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ) * (.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) ) )) - ((.125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) ) * (.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) ) ));
+  cjxet =  - ((.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ) * (.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) ) )) + ((.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) ) * (.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) ) ));
+  cjxze =    ((.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ) * (.125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) )) - ((.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) ) * (.125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ));
 
-  cjyxi =  - (fjxet * fjzze) + (fjzet * fjxze);
-  cjyet =    (fjxxi * fjzze) - (fjzxi * fjxze);
-  cjyze =  - (fjxxi * fjzet) + (fjzxi * fjxet);
+  cjyxi =  - ((.125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ) * (.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) ) )) + ((.125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) ) * (.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) ) ));
+  cjyet =    ((.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ) * (.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) + (z_local[4]-z_local[2]) ) )) - ((.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) ) * (.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) ) ));
+  cjyze =  - ((.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ) * (.125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) )) + ((.125 * ( (z_local[6]-z_local[0]) + (z_local[5]-z_local[3]) - (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) ) * (.125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ));
 
-  cjzxi =    (fjxet * fjyze) - (fjyet * fjxze);
-  cjzet =  - (fjxxi * fjyze) + (fjyxi * fjxze);
-  cjzze =    (fjxxi * fjyet) - (fjyxi * fjxet);
+  cjzxi =    ((.125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ) * (.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) ) )) - ((.125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ) * (.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) ) ));
+  cjzet =  - ((.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ) * (.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) + (y_local[4]-y_local[2]) ) )) + ((.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ) * (.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) + (x_local[4]-x_local[2]) ) ));
+  cjzze =    ((.125 * ( (x_local[6]-x_local[0]) + (x_local[5]-x_local[3]) - (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ) * (.125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) )) - ((.125 * ( (y_local[6]-y_local[0]) + (y_local[5]-y_local[3]) - (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ) * (.125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ));
 
   /* calculate partials :
      this need only be done for l = 0,1,2,3   since , by symmetry ,
@@ -336,7 +321,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   B[2][7] = -B[2][1];
 
   /* calculate jacobian determinant (volume) */
-  detJ = (8.) * ( fjxet * cjxet + fjyet * cjyet + fjzet * cjzet);
+  detJ = (8.) * ( (.125 * ( (x_local[6]-x_local[0]) - (x_local[5]-x_local[3]) + (x_local[7]-x_local[1]) - (x_local[4]-x_local[2]) ) ) * cjxet + (.125 * ( (y_local[6]-y_local[0]) - (y_local[5]-y_local[3]) + (y_local[7]-y_local[1]) - (y_local[4]-y_local[2]) ) ) * cjyet + (.125 * ( (z_local[6]-z_local[0]) - (z_local[5]-z_local[3]) + (z_local[7]-z_local[1]) - (z_local[4]-z_local[2]) ) ) * cjzet);
 }
 
     //CalcElemVelocityGrandient( xd_local,
