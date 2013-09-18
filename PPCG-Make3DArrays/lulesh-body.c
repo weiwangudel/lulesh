@@ -126,9 +126,6 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   // loop over all elements
   Index_t i,j,k;
   Real_t D[6] ;
-  Real_t x_local[8] ;
-  Real_t y_local[8] ;
-  Real_t z_local[8] ;
   Real_t detJ = (0.0) ;
   Real_t inv_detJ;
   Real_t volume;
@@ -140,32 +137,32 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     for( j=0 ; j<edgeElems ; ++j )
       for( k=0 ; k<edgeElems ; ++k )
   {
-    x_local[0] = m_x[i][j][k];                                                    
-    x_local[1] = m_x[i][j][k+1];                                                  
-    x_local[2] = m_x[i][j+1][k+1];                                                
-    x_local[3] = m_x[i][j+1][k];                                                  
-    x_local[4] = m_x[i+1][j][k];                                                  
-    x_local[5] = m_x[i+1][j][k+1];                                                
-    x_local[6] = m_x[i+1][j+1][k+1];                                              
-    x_local[7] = m_x[i+1][j+1][k];                                                
+    //x_local[0] = m_x[i][j][k];                                                    
+    //x_local[1] = m_x[i][j][k+1];                                                  
+    //x_local[2] = m_x[i][j+1][k+1];                                                
+    //x_local[3] = m_x[i][j+1][k];                                                  
+    //x_local[4] = m_x[i+1][j][k];                                                  
+    //x_local[5] = m_x[i+1][j][k+1];                                                
+    //x_local[6] = m_x[i+1][j+1][k+1];                                              
+    //x_local[7] = m_x[i+1][j+1][k];                                                
 
-    y_local[0] = m_y[i][j][k];                                                    
-    y_local[1] = m_y[i][j][k+1];                                                  
-    y_local[2] = m_y[i][j+1][k+1];                                                
-    y_local[3] = m_y[i][j+1][k];                                                  
-    y_local[4] = m_y[i+1][j][k];                                                  
-    y_local[5] = m_y[i+1][j][k+1];                                                
-    y_local[6] = m_y[i+1][j+1][k+1];                                              
-    y_local[7] = m_y[i+1][j+1][k];                                                
+    //y_local[0] = m_y[i][j][k];                                                    
+    //y_local[1] = m_y[i][j][k+1];                                                  
+    //y_local[2] = m_y[i][j+1][k+1];                                                
+    //y_local[3] = m_y[i][j+1][k];                                                  
+    //y_local[4] = m_y[i+1][j][k];                                                  
+    //y_local[5] = m_y[i+1][j][k+1];                                                
+    //y_local[6] = m_y[i+1][j+1][k+1];                                              
+    //y_local[7] = m_y[i+1][j+1][k];                                                
 
-    z_local[0] = m_z[i][j][k];                                                    
-    z_local[1] = m_z[i][j][k+1];                                                  
-    z_local[2] = m_z[i][j+1][k+1];                                                
-    z_local[3] = m_z[i][j+1][k];                                                  
-    z_local[4] = m_z[i+1][j][k];                                                  
-    z_local[5] = m_z[i+1][j][k+1];                                                
-    z_local[6] = m_z[i+1][j+1][k+1];                                              
-    z_local[7] = m_z[i+1][j+1][k];             
+    //z_local[0] = m_z[i][j][k];                                                    
+    //z_local[1] = m_z[i][j][k+1];                                                  
+    //z_local[2] = m_z[i][j+1][k+1];                                                
+    //z_local[3] = m_z[i][j+1][k];                                                  
+    //z_local[4] = m_z[i+1][j][k];                                                  
+    //z_local[5] = m_z[i+1][j][k+1];                                                
+    //z_local[6] = m_z[i+1][j+1][k+1];                                              
+    //z_local[7] = m_z[i+1][j+1][k];             
 
     // volume calculations
 //    volume = CalcElemVolume_3(x_local, y_local, z_local );
@@ -224,98 +221,98 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     //             y[0],y[1],y[2],y[3],
     //             z[0],z[1],z[2],z[3]) ;
     a =                                                                 
-       (((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1]))) *                                            
-       (((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1]))) -                                            
-       (((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1]))) *                                            
-       (((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1])));                                             
+       (((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1]))) *                                            
+       (((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1]))) -                                            
+       (((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1]))) *                                            
+       (((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1])));                                             
     charLength = max(a,charLength) ;
  
     //a = AreaFace(x[4],x[5],x[6],x[7],
     //             y[4],y[5],y[6],y[7],
     //             z[4],z[5],z[6],z[7]) ;
     a =                                                                 
-       (((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5]))) *                                            
-       (((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5]))) -                                            
-       (((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5]))) *                                            
-       (((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5])));                                             
+       (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1]))) *                                            
+       (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1]))) -                                            
+       (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1]))) *                                            
+       (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])));                                             
     charLength = max(a,charLength) ;
  
     //a = AreaFace(x[0],x[1],x[5],x[4],
     //             y[0],y[1],y[5],y[4],
     //             z[0],z[1],z[5],z[4]) ;
     a =                                                                 
-       (((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1]))) *                                            
-       (((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1]))) -                                            
-       (((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1]))) *                                            
-       (((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1])));                                             
+       (((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1]))) *                                            
+       (((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1]))) -                                            
+       (((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1]))) *                                            
+       (((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1])));                                             
     charLength = max(a,charLength) ;
  
     //a = AreaFace(x[1],x[2],x[6],x[5],
     //             y[1],y[2],y[6],y[5],
     //             z[1],z[2],z[6],z[5]) ;
     a =                                                                 
-       (((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2]))) *                                            
-       (((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2]))) -                                            
-       (((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2]))) *                                            
-       (((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2])));                                             
+       (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1]))) *                                            
+       (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1]))) -                                            
+       (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1]))) *                                            
+       (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])));                                             
     charLength = max(a,charLength) ;
  
     //a = AreaFace(x[2],x[3],x[7],x[6],
     //             y[2],y[3],y[7],y[6],
     //             z[2],z[3],z[7],z[6]) ;
     a =                                                                 
-       (((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3]))) *                                            
-       (((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3]))) -                                            
-       (((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3]))) *                                            
-       (((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3])));                                             
+       (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]))) *                                            
+       (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]))) -                                            
+       (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]))) *                                            
+       (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])));                                             
     charLength = max(a,charLength) ;
  
     //a = AreaFace(x[3],x[0],x[4],x[7],
     //             y[3],y[0],y[4],y[7],
     //             z[3],z[0],z[4],z[7]) ;
     a =                                                                 
-       (((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0]))) *                                            
-       (((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0]))) -                                            
-       (((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0]))) *                                            
-       (((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0])));                                             
+       (((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k]))) *                                            
+       (((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k]))) -                                            
+       (((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k]))) *                                            
+       (((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k])));                                             
     charLength = max(a,charLength) ;
  
     arealg(WW) = (4.0) * volume / SQRT(charLength);
  
 }
-    Real_t dt2 = (0.5) * dt;
+    //Real_t dt2 = (0.5) * dt;
     //for ( Index_t j=0 ; j<8 ; ++j )
     //{
     //   x_local[j] -= dt2 * xd_local[j];
     //   y_local[j] -= dt2 * yd_local[j];
     //   z_local[j] -= dt2 * zd_local[j];
     //}
-    x_local[ 0] = (m_x[i][j][k] - (0.5)*dt * m_xd[i][j][k]);                                             
-    x_local[ 1] = (m_x[i][j][k+1] - (0.5)*dt * m_xd[i][j][k+1]);                                             
-    x_local[ 2] = (m_x[i][j+1][k+1] - (0.5)*dt * m_xd[i][j+1][k+1]);                                             
-    x_local[ 3] = (m_x[i][j+1][k] - (0.5)*dt * m_xd[i][j+1][k]);                                             
-    x_local[ 4] = (m_x[i+1][j][k] - (0.5)*dt * m_xd[i+1][j][k]);                                             
-    x_local[ 5] = (m_x[i+1][j][k+1] - (0.5)*dt * m_xd[i+1][j][k+1]);                                             
-    x_local[ 6] = (m_x[i+1][j+1][k+1] - (0.5)*dt * m_xd[i+1][j+1][k+1]);                                             
-    x_local[ 7] = (m_x[i+1][j+1][k] - (0.5)*dt * m_xd[i+1][j+1][k]);                                             
-                               
-    y_local[ 0] = (m_y[i][j][k] - (0.5)*dt * m_yd[i][j][k]);                                             
-    y_local[ 1] = (m_y[i][j][k+1] - (0.5)*dt * m_yd[i][j][k+1]);                                             
-    y_local[ 2] = (m_y[i][j+1][k+1] - (0.5)*dt * m_yd[i][j+1][k+1]);                                             
-    y_local[ 3] = (m_y[i][j+1][k] - (0.5)*dt * m_yd[i][j+1][k]);                                             
-    y_local[ 4] = (m_y[i+1][j][k] - (0.5)*dt * m_yd[i+1][j][k]);                                             
-    y_local[ 5] = (m_y[i+1][j][k+1] - (0.5)*dt * m_yd[i+1][j][k+1]);                                             
-    y_local[ 6] = (m_y[i+1][j+1][k+1] - (0.5)*dt * m_yd[i+1][j+1][k+1]);                                             
-    y_local[ 7] = (m_y[i+1][j+1][k] - (0.5)*dt * m_yd[i+1][j+1][k]);                                             
-                               
-    z_local[ 0] = (m_z[i][j][k] - (0.5)*dt * m_zd[i][j][k]);                                             
-    z_local[ 1] = (m_z[i][j][k+1] - (0.5)*dt * m_zd[i][j][k+1]);                                             
-    z_local[ 2] = (m_z[i][j+1][k+1] - (0.5)*dt * m_zd[i][j+1][k+1]);                                             
-    z_local[ 3] = (m_z[i][j+1][k] - (0.5)*dt * m_zd[i][j+1][k]);                                             
-    z_local[ 4] = (m_z[i+1][j][k] - (0.5)*dt * m_zd[i+1][j][k]);                                             
-    z_local[ 5] = (m_z[i+1][j][k+1] - (0.5)*dt * m_zd[i+1][j][k+1]);                                             
-    z_local[ 6] = (m_z[i+1][j+1][k+1] - (0.5)*dt * m_zd[i+1][j+1][k+1]);                                             
-    z_local[ 7] = (m_z[i+1][j+1][k] - (0.5)*dt * m_zd[i+1][j+1][k]);          
+    //x_local[ 0] = (m_x[i][j][k] - (0.5)*dt * m_xd[i][j][k]);                                             
+    //x_local[ 1] = (m_x[i][j][k+1] - (0.5)*dt * m_xd[i][j][k+1]);                                             
+    //x_local[ 2] = (m_x[i][j+1][k+1] - (0.5)*dt * m_xd[i][j+1][k+1]);                                             
+    //x_local[ 3] = (m_x[i][j+1][k] - (0.5)*dt * m_xd[i][j+1][k]);                                             
+    //x_local[ 4] = (m_x[i+1][j][k] - (0.5)*dt * m_xd[i+1][j][k]);                                             
+    //x_local[ 5] = (m_x[i+1][j][k+1] - (0.5)*dt * m_xd[i+1][j][k+1]);                                             
+    //x_local[ 6] = (m_x[i+1][j+1][k+1] - (0.5)*dt * m_xd[i+1][j+1][k+1]);                                             
+    //x_local[ 7] = (m_x[i+1][j+1][k] - (0.5)*dt * m_xd[i+1][j+1][k]);                                             
+    //                           
+    //y_local[ 0] = (m_y[i][j][k] - (0.5)*dt * m_yd[i][j][k]);                                             
+    //y_local[ 1] = (m_y[i][j][k+1] - (0.5)*dt * m_yd[i][j][k+1]);                                             
+    //y_local[ 2] = (m_y[i][j+1][k+1] - (0.5)*dt * m_yd[i][j+1][k+1]);                                             
+    //y_local[ 3] = (m_y[i][j+1][k] - (0.5)*dt * m_yd[i][j+1][k]);                                             
+    //y_local[ 4] = (m_y[i+1][j][k] - (0.5)*dt * m_yd[i+1][j][k]);                                             
+    //y_local[ 5] = (m_y[i+1][j][k+1] - (0.5)*dt * m_yd[i+1][j][k+1]);                                             
+    //y_local[ 6] = (m_y[i+1][j+1][k+1] - (0.5)*dt * m_yd[i+1][j+1][k+1]);                                             
+    //y_local[ 7] = (m_y[i+1][j+1][k] - (0.5)*dt * m_yd[i+1][j+1][k]);                                             
+    //                           
+    //z_local[ 0] = (m_z[i][j][k] - (0.5)*dt * m_zd[i][j][k]);                                             
+    //z_local[ 1] = (m_z[i][j][k+1] - (0.5)*dt * m_zd[i][j][k+1]);                                             
+    //z_local[ 2] = (m_z[i][j+1][k+1] - (0.5)*dt * m_zd[i][j+1][k+1]);                                             
+    //z_local[ 3] = (m_z[i][j+1][k] - (0.5)*dt * m_zd[i][j+1][k]);                                             
+    //z_local[ 4] = (m_z[i+1][j][k] - (0.5)*dt * m_zd[i+1][j][k]);                                             
+    //z_local[ 5] = (m_z[i+1][j][k+1] - (0.5)*dt * m_zd[i+1][j][k+1]);                                             
+    //z_local[ 6] = (m_z[i+1][j+1][k+1] - (0.5)*dt * m_zd[i+1][j+1][k+1]);                                             
+    //z_local[ 7] = (m_z[i+1][j+1][k] - (0.5)*dt * m_zd[i+1][j+1][k]);          
 
     
 
