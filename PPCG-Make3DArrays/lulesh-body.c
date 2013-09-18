@@ -133,6 +133,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   Real_t inv_detJ;
   Real_t volume;
   Real_t relativeVolume ;
+  Real_t a, charLength = (0.0);
 //#pragma omp parallel for firstprivate(numElem, dt)
   #pragma scop
   for( i=0 ; i<edgeElems ; ++i )
@@ -191,11 +192,96 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 
     // How to resolve this function? 
     // set characteristic length
-    arealg((WW)) = CalcElemCharacteristicLength(x_local,
-                                                  y_local,
-                                                  z_local,
-                                                  volume);
+    //arealg((WW)) = CalcElemCharacteristicLength(x_local,
+    //                                              y_local,
+    //                                              z_local,
+    //                                              volume);
+//Real_t AreaFace( const Real_t x0, const Real_t x1,                               
+//                 const Real_t x2, const Real_t x3,                               
+//                 const Real_t y0, const Real_t y1,                               
+//                 const Real_t y2, const Real_t y3,                               
+//                 const Real_t z0, const Real_t z1,                               
+//                 const Real_t z2, const Real_t z3)                               
+//{                                                                                
+//   Real_t fx = (x2 - x0) - (x3 - x1);                                            
+//   Real_t fy = (y2 - y0) - (y3 - y1);                                            
+//   Real_t fz = (z2 - z0) - (z3 - z1);                                            
+//   Real_t gx = (x2 - x0) + (x3 - x1);                                            
+//   Real_t gy = (y2 - y0) + (y3 - y1);                                            
+//   Real_t gz = (z2 - z0) + (z3 - z1);                                            
+//   Real_t area =                                                                 
+//      (fx * fx + fy * fy + fz * fz) *                                            
+//      (gx * gx + gy * gy + gz * gz) -                                            
+//      (fx * gx + fy * gy + fz * gz) *                                            
+//      (fx * gx + fy * gy + fz * gz);                                             
+//   return area ;                                                                 
+//}                      
 
+{
+ 
+    //a = AreaFace(x[0],x[1],x[2],x[3],
+    //             y[0],y[1],y[2],y[3],
+    //             z[0],z[1],z[2],z[3]) ;
+    a =                                                                 
+       (((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1]))) *                                            
+       (((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1]))) -                                            
+       (((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1]))) *                                            
+       (((x_local[2] - x_local[0]) - (x_local[3] - x_local[1])) * ((x_local[2] - x_local[0]) + (x_local[3] - x_local[1])) + ((y_local[2] - y_local[0]) - (y_local[3] - y_local[1])) * ((y_local[2] - y_local[0]) + (y_local[3] - y_local[1])) + ((z_local[2] - z_local[0]) - (z_local[3] - z_local[1])) * ((z_local[2] - z_local[0]) + (z_local[3] - z_local[1])));                                             
+    charLength = max(a,charLength) ;
+ 
+    //a = AreaFace(x[4],x[5],x[6],x[7],
+    //             y[4],y[5],y[6],y[7],
+    //             z[4],z[5],z[6],z[7]) ;
+    a =                                                                 
+       (((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5]))) *                                            
+       (((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5]))) -                                            
+       (((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5]))) *                                            
+       (((x_local[6] - x_local[4]) - (x_local[7] - x_local[5])) * ((x_local[6] - x_local[4]) + (x_local[7] - x_local[5])) + ((y_local[6] - y_local[4]) - (y_local[7] - y_local[5])) * ((y_local[6] - y_local[4]) + (y_local[7] - y_local[5])) + ((z_local[6] - z_local[4]) - (z_local[7] - z_local[5])) * ((z_local[6] - z_local[4]) + (z_local[7] - z_local[5])));                                             
+    charLength = max(a,charLength) ;
+ 
+    //a = AreaFace(x[0],x[1],x[5],x[4],
+    //             y[0],y[1],y[5],y[4],
+    //             z[0],z[1],z[5],z[4]) ;
+    a =                                                                 
+       (((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1]))) *                                            
+       (((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1]))) -                                            
+       (((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1]))) *                                            
+       (((x_local[5] - x_local[0]) - (x_local[4] - x_local[1])) * ((x_local[5] - x_local[0]) + (x_local[4] - x_local[1])) + ((y_local[5] - y_local[0]) - (y_local[4] - y_local[1])) * ((y_local[5] - y_local[0]) + (y_local[4] - y_local[1])) + ((z_local[5] - z_local[0]) - (z_local[4] - z_local[1])) * ((z_local[5] - z_local[0]) + (z_local[4] - z_local[1])));                                             
+    charLength = max(a,charLength) ;
+ 
+    //a = AreaFace(x[1],x[2],x[6],x[5],
+    //             y[1],y[2],y[6],y[5],
+    //             z[1],z[2],z[6],z[5]) ;
+    a =                                                                 
+       (((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2]))) *                                            
+       (((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2]))) -                                            
+       (((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2]))) *                                            
+       (((x_local[6] - x_local[1]) - (x_local[5] - x_local[2])) * ((x_local[6] - x_local[1]) + (x_local[5] - x_local[2])) + ((y_local[6] - y_local[1]) - (y_local[5] - y_local[2])) * ((y_local[6] - y_local[1]) + (y_local[5] - y_local[2])) + ((z_local[6] - z_local[1]) - (z_local[5] - z_local[2])) * ((z_local[6] - z_local[1]) + (z_local[5] - z_local[2])));                                             
+    charLength = max(a,charLength) ;
+ 
+    //a = AreaFace(x[2],x[3],x[7],x[6],
+    //             y[2],y[3],y[7],y[6],
+    //             z[2],z[3],z[7],z[6]) ;
+    a =                                                                 
+       (((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3]))) *                                            
+       (((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3]))) -                                            
+       (((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3]))) *                                            
+       (((x_local[7] - x_local[2]) - (x_local[6] - x_local[3])) * ((x_local[7] - x_local[2]) + (x_local[6] - x_local[3])) + ((y_local[7] - y_local[2]) - (y_local[6] - y_local[3])) * ((y_local[7] - y_local[2]) + (y_local[6] - y_local[3])) + ((z_local[7] - z_local[2]) - (z_local[6] - z_local[3])) * ((z_local[7] - z_local[2]) + (z_local[6] - z_local[3])));                                             
+    charLength = max(a,charLength) ;
+ 
+    //a = AreaFace(x[3],x[0],x[4],x[7],
+    //             y[3],y[0],y[4],y[7],
+    //             z[3],z[0],z[4],z[7]) ;
+    a =                                                                 
+       (((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0]))) *                                            
+       (((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0]))) -                                            
+       (((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0]))) *                                            
+       (((x_local[4] - x_local[3]) - (x_local[7] - x_local[0])) * ((x_local[4] - x_local[3]) + (x_local[7] - x_local[0])) + ((y_local[4] - y_local[3]) - (y_local[7] - y_local[0])) * ((y_local[4] - y_local[3]) + (y_local[7] - y_local[0])) + ((z_local[4] - z_local[3]) - (z_local[7] - z_local[0])) * ((z_local[4] - z_local[3]) + (z_local[7] - z_local[0])));                                             
+    charLength = max(a,charLength) ;
+ 
+    arealg(WW) = (4.0) * volume / SQRT(charLength);
+ 
+}
     Real_t dt2 = (0.5) * dt;
     //for ( Index_t j=0 ; j<8 ; ++j )
     //{
