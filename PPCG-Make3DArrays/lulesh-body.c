@@ -133,7 +133,7 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
   Real_t inv_detJ;
   Real_t volume;
   Real_t relativeVolume ;
-  Real_t a, charLength = (0.0);
+  Real_t a, charLength;
 //#pragma omp parallel for firstprivate(numElem, dt)
   #pragma scop
   for( i=0 ; i<edgeElems ; ++i )
@@ -218,7 +218,8 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 //}                      
 
 {
- 
+
+    charLength = 0.0; 
     //a = AreaFace(x[0],x[1],x[2],x[3],
     //             y[0],y[1],y[2],y[3],
     //             z[0],z[1],z[2],z[3]) ;
