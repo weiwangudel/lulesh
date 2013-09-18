@@ -125,12 +125,12 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 {
   // loop over all elements
   Index_t i,j,k;
-  Real_t D[6] ;
+//  Real_t D[6] ;
   Real_t detJ = (0.0) ;
-  Real_t inv_detJ;
-  Real_t volume;
-  Real_t relativeVolume ;
-  Real_t a, charLength;
+//  Real_t inv_detJ;
+//  Real_t volume;
+//  Real_t relativeVolume ;
+//  Real_t a, charLength;
 //#pragma omp parallel for firstprivate(numElem, dt)
   #pragma scop
   for( i=0 ; i<edgeElems ; ++i )
@@ -169,23 +169,15 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
     {
     #define TRIPLE_PRODUCT(x1, y1, z1, x2, y2, z2, x3, y3, z3) ((x1)*((y2)*(z3) - (z2)*(y3)) + (x2)*((z1)*(y3) - (y1)*(z3)) + (x3)*((y1)*(z2) - (z1)*(y2)))
     
-      volume = (1.0)/(12.0) * (
-        TRIPLE_PRODUCT((m_x[i][j+1][k] - m_x[i][j][k+1]) + (m_x[i+1][j+1][k] - m_x[i][j+1][k+1]), (m_x[i+1][j+1][k+1] - m_x[i][j+1][k]), (m_x[i][j+1][k+1] - m_x[i][j][k]),
-           (m_y[i][j+1][k] - m_y[i][j][k+1]) + (m_y[i+1][j+1][k] - m_y[i][j+1][k+1]), (m_y[i+1][j+1][k+1] - m_y[i][j+1][k]), (m_y[i][j+1][k+1] - m_y[i][j][k]),
-           (m_z[i][j+1][k] - m_z[i][j][k+1]) + (m_z[i+1][j+1][k] - m_z[i][j+1][k+1]), (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]), (m_z[i][j+1][k+1] - m_z[i][j][k])) +
-        TRIPLE_PRODUCT((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j][k+1] - m_x[i+1][j+1][k]), (m_x[i+1][j+1][k+1] - m_x[i+1][j][k]), (m_x[i+1][j+1][k] - m_x[i][j][k]),
-           (m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j][k+1] - m_y[i+1][j+1][k]), (m_y[i+1][j+1][k+1] - m_y[i+1][j][k]), (m_y[i+1][j+1][k] - m_y[i][j][k]),
-           (m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j][k+1] - m_z[i+1][j+1][k]), (m_z[i+1][j+1][k+1] - m_z[i+1][j][k]), (m_z[i+1][j+1][k] - m_z[i][j][k])) +
-        TRIPLE_PRODUCT((m_x[i][j][k+1] - m_x[i+1][j][k]) + (m_x[i][j+1][k+1] - m_x[i+1][j][k+1]), (m_x[i+1][j+1][k+1] - m_x[i][j][k+1]), (m_x[i+1][j][k+1] - m_x[i][j][k]),
-           (m_y[i][j][k+1] - m_y[i+1][j][k]) + (m_y[i][j+1][k+1] - m_y[i+1][j][k+1]), (m_y[i+1][j+1][k+1] - m_y[i][j][k+1]), (m_y[i+1][j][k+1] - m_y[i][j][k]),
-           (m_z[i][j][k+1] - m_z[i+1][j][k]) + (m_z[i][j+1][k+1] - m_z[i+1][j][k+1]), (m_z[i+1][j+1][k+1] - m_z[i][j][k+1]), (m_z[i+1][j][k+1] - m_z[i][j][k]))  );
+     // volume = (1.0)/(12.0) * (TRIPLE_PRODUCT((m_x[i][j+1][k] - m_x[i][j][k+1]) + (m_x[i+1][j+1][k] - m_x[i][j+1][k+1]), (m_x[i+1][j+1][k+1] - m_x[i][j+1][k]), (m_x[i][j+1][k+1] - m_x[i][j][k]), (m_y[i][j+1][k] - m_y[i][j][k+1]) + (m_y[i+1][j+1][k] - m_y[i][j+1][k+1]), (m_y[i+1][j+1][k+1] - m_y[i][j+1][k]), (m_y[i][j+1][k+1] - m_y[i][j][k]), (m_z[i][j+1][k] - m_z[i][j][k+1]) + (m_z[i+1][j+1][k] - m_z[i][j+1][k+1]), (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]), (m_z[i][j+1][k+1] - m_z[i][j][k])) + TRIPLE_PRODUCT((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j][k+1] - m_x[i+1][j+1][k]), (m_x[i+1][j+1][k+1] - m_x[i+1][j][k]), (m_x[i+1][j+1][k] - m_x[i][j][k]), (m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j][k+1] - m_y[i+1][j+1][k]), (m_y[i+1][j+1][k+1] - m_y[i+1][j][k]), (m_y[i+1][j+1][k] - m_y[i][j][k]), (m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j][k+1] - m_z[i+1][j+1][k]), (m_z[i+1][j+1][k+1] - m_z[i+1][j][k]), (m_z[i+1][j+1][k] - m_z[i][j][k])) + TRIPLE_PRODUCT((m_x[i][j][k+1] - m_x[i+1][j][k]) + (m_x[i][j+1][k+1] - m_x[i+1][j][k+1]), (m_x[i+1][j+1][k+1] - m_x[i][j][k+1]), (m_x[i+1][j][k+1] - m_x[i][j][k]), (m_y[i][j][k+1] - m_y[i+1][j][k]) + (m_y[i][j+1][k+1] - m_y[i+1][j][k+1]), (m_y[i+1][j+1][k+1] - m_y[i][j][k+1]), (m_y[i+1][j][k+1] - m_y[i][j][k]), (m_z[i][j][k+1] - m_z[i+1][j][k]) + (m_z[i][j+1][k+1] - m_z[i+1][j][k+1]), (m_z[i+1][j+1][k+1] - m_z[i][j][k+1]), (m_z[i+1][j][k+1] - m_z[i][j][k]))  );
+    //vnew((WW)) = relativeVolume ;
+    vnew(WW) = ((1.0)/(12.0) * (TRIPLE_PRODUCT((m_x[i][j+1][k] - m_x[i][j][k+1]) + (m_x[i+1][j+1][k] - m_x[i][j+1][k+1]), (m_x[i+1][j+1][k+1] - m_x[i][j+1][k]), (m_x[i][j+1][k+1] - m_x[i][j][k]), (m_y[i][j+1][k] - m_y[i][j][k+1]) + (m_y[i+1][j+1][k] - m_y[i][j+1][k+1]), (m_y[i+1][j+1][k+1] - m_y[i][j+1][k]), (m_y[i][j+1][k+1] - m_y[i][j][k]), (m_z[i][j+1][k] - m_z[i][j][k+1]) + (m_z[i+1][j+1][k] - m_z[i][j+1][k+1]), (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]), (m_z[i][j+1][k+1] - m_z[i][j][k])) + TRIPLE_PRODUCT((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j][k+1] - m_x[i+1][j+1][k]), (m_x[i+1][j+1][k+1] - m_x[i+1][j][k]), (m_x[i+1][j+1][k] - m_x[i][j][k]), (m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j][k+1] - m_y[i+1][j+1][k]), (m_y[i+1][j+1][k+1] - m_y[i+1][j][k]), (m_y[i+1][j+1][k] - m_y[i][j][k]), (m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j][k+1] - m_z[i+1][j+1][k]), (m_z[i+1][j+1][k+1] - m_z[i+1][j][k]), (m_z[i+1][j+1][k] - m_z[i][j][k])) + TRIPLE_PRODUCT((m_x[i][j][k+1] - m_x[i+1][j][k]) + (m_x[i][j+1][k+1] - m_x[i+1][j][k+1]), (m_x[i+1][j+1][k+1] - m_x[i][j][k+1]), (m_x[i+1][j][k+1] - m_x[i][j][k]), (m_y[i][j][k+1] - m_y[i+1][j][k]) + (m_y[i][j+1][k+1] - m_y[i+1][j][k+1]), (m_y[i+1][j+1][k+1] - m_y[i][j][k+1]), (m_y[i+1][j][k+1] - m_y[i][j][k]), (m_z[i][j][k+1] - m_z[i+1][j][k]) + (m_z[i][j+1][k+1] - m_z[i+1][j][k+1]), (m_z[i+1][j+1][k+1] - m_z[i][j][k+1]), (m_z[i+1][j][k+1] - m_z[i][j][k]))  ) ) / volo((WW)) ;
+    //delv((WW)) = relativeVolume - v((WW)) ;
+    delv((WW)) = vnew(WW) - v((WW)) ;
     
     #undef TRIPLE_PRODUCT
     }
 
-    relativeVolume = volume / volo((WW)) ;
-    vnew((WW)) = relativeVolume ;
-    delv((WW)) = relativeVolume - v((WW)) ;
 
     // How to resolve this function? 
     // set characteristic length
@@ -216,68 +208,41 @@ void CalcKinematicsForElems( Index_t numElem, Real_t dt )
 
 {
 
-    charLength = 0.0; 
+    //charLength = 0.0; 
     //a = AreaFace(x[0],x[1],x[2],x[3],
     //             y[0],y[1],y[2],y[3],
     //             z[0],z[1],z[2],z[3]) ;
-    a =                                                                 
+    arealg(WW) = (4.0) * vnew(WW)*volo(WW) / SQRT(
+    max (                                                                 
        (((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1]))) *                                            
        (((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1]))) -                                            
        (((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1]))) *                                            
-       (((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1])));                                             
-    charLength = max(a,charLength) ;
- 
-    //a = AreaFace(x[4],x[5],x[6],x[7],
-    //             y[4],y[5],y[6],y[7],
-    //             z[4],z[5],z[6],z[7]) ;
-    a =                                                                 
+       (((m_x[i][j+1][k+1] - m_x[i][j][k]) - (m_x[i][j+1][k] - m_x[i][j][k+1])) * ((m_x[i][j+1][k+1] - m_x[i][j][k]) + (m_x[i][j+1][k] - m_x[i][j][k+1])) + ((m_y[i][j+1][k+1] - m_y[i][j][k]) - (m_y[i][j+1][k] - m_y[i][j][k+1])) * ((m_y[i][j+1][k+1] - m_y[i][j][k]) + (m_y[i][j+1][k] - m_y[i][j][k+1])) + ((m_z[i][j+1][k+1] - m_z[i][j][k]) - (m_z[i][j+1][k] - m_z[i][j][k+1])) * ((m_z[i][j+1][k+1] - m_z[i][j][k]) + (m_z[i][j+1][k] - m_z[i][j][k+1]))), 
+                 max (
        (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1]))) *                                            
        (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1]))) -                                            
        (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1]))) *                                            
-       (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])));                                             
-    charLength = max(a,charLength) ;
- 
-    //a = AreaFace(x[0],x[1],x[5],x[4],
-    //             y[0],y[1],y[5],y[4],
-    //             z[0],z[1],z[5],z[4]) ;
-    a =                                                                 
+       (((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) - (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i+1][j][k]) + (m_x[i+1][j+1][k] - m_x[i+1][j][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) - (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i+1][j][k]) + (m_y[i+1][j+1][k] - m_y[i+1][j][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) - (m_z[i+1][j+1][k] - m_z[i+1][j][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i+1][j][k]) + (m_z[i+1][j+1][k] - m_z[i+1][j][k+1]))) ,                                             
+            max ( 
        (((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1]))) *                                            
        (((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1]))) -                                            
        (((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1]))) *                                            
-       (((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1])));                                             
-    charLength = max(a,charLength) ;
- 
-    //a = AreaFace(x[1],x[2],x[6],x[5],
-    //             y[1],y[2],y[6],y[5],
-    //             z[1],z[2],z[6],z[5]) ;
-    a =                                                                 
+       (((m_x[i+1][j][k+1] - m_x[i][j][k]) - (m_x[i+1][j][k] - m_x[i][j][k+1])) * ((m_x[i+1][j][k+1] - m_x[i][j][k]) + (m_x[i+1][j][k] - m_x[i][j][k+1])) + ((m_y[i+1][j][k+1] - m_y[i][j][k]) - (m_y[i+1][j][k] - m_y[i][j][k+1])) * ((m_y[i+1][j][k+1] - m_y[i][j][k]) + (m_y[i+1][j][k] - m_y[i][j][k+1])) + ((m_z[i+1][j][k+1] - m_z[i][j][k]) - (m_z[i+1][j][k] - m_z[i][j][k+1])) * ((m_z[i+1][j][k+1] - m_z[i][j][k]) + (m_z[i+1][j][k] - m_z[i][j][k+1]))), 
+       max (                                      
        (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1]))) *                                            
        (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1]))) -                                            
        (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1]))) *                                            
-       (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])));                                             
-    charLength = max(a,charLength) ;
- 
-    //a = AreaFace(x[2],x[3],x[7],x[6],
-    //             y[2],y[3],y[7],y[6],
-    //             z[2],z[3],z[7],z[6]) ;
-    a =                                                                 
+       (((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) - (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) * ((m_x[i+1][j+1][k+1] - m_x[i][j][k+1]) + (m_x[i+1][j][k+1] - m_x[i][j+1][k+1])) + ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) - (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) * ((m_y[i+1][j+1][k+1] - m_y[i][j][k+1]) + (m_y[i+1][j][k+1] - m_y[i][j+1][k+1])) + ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) - (m_z[i+1][j][k+1] - m_z[i][j+1][k+1])) * ((m_z[i+1][j+1][k+1] - m_z[i][j][k+1]) + (m_z[i+1][j][k+1] - m_z[i][j+1][k+1]))) ,       
+        max (                                                                 
        (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]))) *                                            
        (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]))) -                                            
        (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]))) *                                            
-       (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])));                                             
-    charLength = max(a,charLength) ;
+       (((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) - (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) * ((m_x[i+1][j+1][k] - m_x[i][j+1][k+1]) + (m_x[i+1][j+1][k+1] - m_x[i][j+1][k])) + ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) - (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) * ((m_y[i+1][j+1][k] - m_y[i][j+1][k+1]) + (m_y[i+1][j+1][k+1] - m_y[i][j+1][k])) + ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) - (m_z[i+1][j+1][k+1] - m_z[i][j+1][k])) * ((m_z[i+1][j+1][k] - m_z[i][j+1][k+1]) + (m_z[i+1][j+1][k+1] - m_z[i][j+1][k]))) ,                                             
  
-    //a = AreaFace(x[3],x[0],x[4],x[7],
-    //             y[3],y[0],y[4],y[7],
-    //             z[3],z[0],z[4],z[7]) ;
-    a =                                                                 
        (((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k]))) *                                            
        (((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k]))) -                                            
        (((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k]))) *                                            
-       (((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k])));                                             
-    charLength = max(a,charLength) ;
- 
-    arealg(WW) = (4.0) * volume / SQRT(charLength);
+       (((m_x[i+1][j][k] - m_x[i][j+1][k]) - (m_x[i+1][j+1][k] - m_x[i][j][k])) * ((m_x[i+1][j][k] - m_x[i][j+1][k]) + (m_x[i+1][j+1][k] - m_x[i][j][k])) + ((m_y[i+1][j][k] - m_y[i][j+1][k]) - (m_y[i+1][j+1][k] - m_y[i][j][k])) * ((m_y[i+1][j][k] - m_y[i][j+1][k]) + (m_y[i+1][j+1][k] - m_y[i][j][k])) + ((m_z[i+1][j][k] - m_z[i][j+1][k]) - (m_z[i+1][j+1][k] - m_z[i][j][k])) * ((m_z[i+1][j][k] - m_z[i][j+1][k]) + (m_z[i+1][j+1][k] - m_z[i][j][k]))) ) ) ) ) )  );      
  
 }
     //Real_t dt2 = (0.5) * dt;
