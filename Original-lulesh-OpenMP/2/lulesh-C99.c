@@ -2918,7 +2918,7 @@ int main(int argc, char *argv[])
    deltatime() = (1.0e-7) ;
    deltatimemultlb() = (1.1) ;
    deltatimemultub() = (1.2) ;
-   stoptime()  = (1.0e-6) ;
+   stoptime()  = (1.0e-4) ;
    dtcourant() = (1.0e+20) ;
    dthydro()   = (1.0e+20) ;
    dtmax()     = (1.0e-2) ;

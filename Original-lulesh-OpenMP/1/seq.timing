@@ -1,0 +1,5 @@
+real    0m16.043s
+user    0m13.337s
+sys 0m2.691s
+
+for stoptime = 1e-4. 45 being the size

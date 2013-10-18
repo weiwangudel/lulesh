@@ -3007,7 +3007,7 @@ int main(int argc, char *argv[])
    domain.deltatime() = Real_t(1.0e-7) ;
    domain.deltatimemultlb() = Real_t(1.1) ;
    domain.deltatimemultub() = Real_t(1.2) ;
-   domain.stoptime()  = Real_t(1.0e-6) ;
+   domain.stoptime()  = Real_t(1.0e-4) ;
    domain.dtcourant() = Real_t(1.0e+20) ;
    domain.dthydro()   = Real_t(1.0e+20) ;
    domain.dtmax()     = Real_t(1.0e-2) ;
