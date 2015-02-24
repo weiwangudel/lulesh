@@ -1,0 +1,49 @@
+In the original code, almost every region contains such a for loop and statement patterns.
+for (i=0; i<N*N*N; i++)  {
+    local_a1 = A1[ B[i] ]
+    local_a2 = A2[ B[i] ]
+    ...
+    a1 = c1*local_a1 + (c1 - c2) * (local_a2-local_a1) + ...
+    a2 = c1*local_a2 + (c1 - c2) * (local_a2-local_a1) + ...
+
+    X_a1 = a1 * cc1 + a2 +....
+}
+In order to extract SCoP using Polyopt, indirect indexing should be eliminated.
+It turns out that B[i]  =  i + i / (N*N) * (2*N+1) +  i % (N*N)   /  N , however Polyopt does not support % and / operations.
+Then I transformed the single for loop to a perfect loop nest  j,k,L . B[i] = j*N*N+k*N+L + j * (2*N+1) + k  = j*(N+1)*(N+1) + k*(N+1) + L
+for (j=0; j<N; j++)  {
+  for(k=0; k<N; k++) {
+    for(l=0; l<N; l++ )   {
+       local_a1 = A1[ j*(N+1)*(N+1)+k*(N+1)+L ]
+       local_a2 = A2[ j*(N+1)*(N+1)+k*(N+1)+L ]
+       ...
+        a1 = c1*local_a1 + (c1 - c2) * (local_a2-local_a1) + ...
+        a2 = c1*local_a2 + (c1 - c2) * (local_a2-local_a1) + ...
+       
+        X_a1 = a1 * cc1 + a2 +....
+    }
+  }
+}
+
+N is defined as a macro, so array accesses are affine.
+
+The above are about all the transformations needed, the others are tedious inlining of functions and eliminating temporary variables
+
+
+
+
+I am attaching several versions of LULESH code (all code based on LULESH 1.0, LLNL recently released LULESH 2.0 but I believe the computation kernels do not change much).
+If zipped, the file contains:
+Folder 1: Original C/C++ OpenMP implementation and Makefile
+Folder 2: 100% C/C99 OpenMP implementation (no SCoP extracted) and Makefile
+
+lulesh-body.c file in the following folders contains SCoPs readys for polyopt.
+Folder 3: 2nd-largest parallel region SCoP extracted (possibly readable code) with all OpenMP pragmas commented out and Makefile.
+Note this Makefile contains polyopt commands to transform the code. rose_lulesh-body.c is the output file from polyopt.
+Folder 4: largest and 2nd-largest parallel region SCoPed (not readable code)  and Makefile. Note this also contains polyopt commands.
+The rose_lulesh-body.c is the transformed output file by polyopt. Typescript records the transformation process.
+Note that if type "make", it even take GCC a while to generate the executable.
+Folder 5: 2nd-3rd parallel region SCoPed (excluded largest parallel region for faster transformation) and Makefile
+
+Note that the size of the problem controlled by edgeElems(macro in lulesh.h are different, one can change it at will).
+I hope PENCIL would help us out with the largest parallel region. This way, we do not need to wait 100 minutes for each program variants.
